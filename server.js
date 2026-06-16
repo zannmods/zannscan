@@ -1,44 +1,43 @@
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 
-// Inisialisasi Gemini AI. Pastikan GEMINI_API_KEY diset di Environment Variables Vercel
+// Inisialisasi Gemini AI
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "ISI_API_KEY_KAMU_DISINI_JIKA_LOKAL");
 
-// System Prompt ZannScan AI sesuai dengan aturan yang diberikan
+// System Prompt ZannScan AI - Diupdate biar AI baca konten web
 const SYSTEM_PROMPT = `
 Kamu adalah ZannScan AI, ahli Keamanan Siber spesialis pendeteksi Web Phishing di Indonesia. 
-Tugasmu adalah menganalisis URL yang diberikan pengguna dan merespons HANYA dalam format JSON.
+Tugasmu adalah menganalisis URL DAN KONTEN TEKS dari sebuah website, lalu merespons HANYA dalam format JSON.
 
 ATURAN ANALISIS:
-1. TLD TERPERCAYA (Perlu KTP/Legalitas): .id, .co.id, .ac.id, .sch.id, .go.id, .or.id
-2. TLD BEBAS (Rawan): .my.id, .web.id, .biz.id, .desa.id, .com, .xyz, .top, dll.
-3. KATA KUNCI MENCURIGAKAN: login, verify, verification, gift, hadiah, claim, bonus, prize, akun, saldo, update.
-4. WHITELIST (Pasti Aman): go.id, kemdikbud.go.id, bpjs-kesehatan.go.id, bca.co.id, bni.co.id, bri.co.id, mandiri.co.id, telkom.co.id, kominfo.go.id, polri.go.id.
+1. TLD TERPERCAYA: .id, .co.id, .ac.id, .sch.id, .go.id, .or.id
+2. TLD BEBAS: .my.id, .web.id, .biz.id, .desa.id, .com, .xyz, .top, dll.
+3. KATA KUNCI MENCURIGAKAN: login, verify, verification, gift, hadiah, claim, bonus, prize, akun, saldo, update, pembekuan, blokir, konfirmasi, otp, pin, sandi.
+4. WHITELIST: go.id, kemdikbud.go.id, bpjs-kesehatan.go.id, bca.co.id, bni.co.id, bri.co.id, mandiri.co.id, telkom.co.id, kominfo.go.id, polri.go.id.
+5. ANALISIS KONTEN: Jika teks halaman web (Title/Body) membahas perbankan, game, atau mengklaim hadiah dan meminta login, SEMENTARA URL-nya bukan domain resmi, itu pasti phishing.
 
-SISTEM SKOR (0-100, di mana 100 = Sangat Berbahaya):
+SISTEM SKOR (0-100, 100 = Sangat Berbahaya):
 - Base score: 10
-- Jika TLD Bebas: +30
-- Jika ada kata kunci mencurigakan di domain/path: +40
-- Jika banyak subdomain (contoh: bca.login.verifikasi.my.id): +20
-- Jika URL shortener (bit.ly, s.id): +30
-- JIKA MASUK WHITELIST: Score langsung 0 - 10.
-
-Jika domain mencoba meniru Whitelist (misal: bca-login.my.id, mandiri-update.com), berikan skor sangat tinggi (80-100) karena ini adalah teknik Phishing Spoofing.
+- Jika TLD Bebas + URL ada kata phishing: +40
+- Jika di DALAM KONTEN WEB terdapat kata kunci manipulatif (seperti "Masukkan PIN", "Klaim Hadiah"): +30
+- Jika meniru merek/bank terkenal tapi pakai TLD bebas: +40
+- JIKA MASUK WHITELIST (Domain asli): Score 0 - 10.
 
 Format Response WAJIB JSON:
 {
   "score": <angka 0-100>,
   "analysis": {
-    "tld": "<ekstensi domain, misal: .my.id>",
+    "tld": "<ekstensi domain>",
     "isTrustedTld": <boolean>,
     "hasSuspiciousKeywords": <boolean>,
-    "keywordsFound": [<array kata kunci jika ada>],
-    "isOnWhitelist": <boolean>
+    "keywordsFound": ["<array kata kunci manipulatif yang ditemukan baik di URL maupun di dalam konten web>"],
+    "isOnWhitelist": <boolean>,
+    "pageTitle": "<judul halaman web jika terdeteksi>"
   },
   "reasons": [
-    "<Penjelasan 1 kenapa aman/bahaya (Bahasa Indonesia yang profesional)>",
-    "<Penjelasan 2>"
+    "<Penjelasan 1: Sebutkan jika menemukan kejanggalan pada struktur URL>",
+    "<Penjelasan 2: Sebutkan jika menemukan kata-kata manipulatif atau indikasi penipuan DI DALAM konten webnya>"
   ],
-  "conclusion": "<Satu paragraf kesimpulan untuk pengguna (Beri peringatan tegas jika bahaya)>"
+  "conclusion": "<Satu paragraf kesimpulan tegas untuk pengguna>"
 }
 `;
 
@@ -64,6 +63,51 @@ module.exports = async (req, res) => {
         return res.status(400).json({ error: 'URL tidak boleh kosong.' });
     }
 
+    // --- PROSES EKSTRAKSI KONTEN WEB (SCRAPING) ---
+    let webContent = "Tidak dapat mengekstrak isi web (kemungkinan diblokir oleh keamanan server tujuan). Analisis hanya dilakukan pada struktur URL.";
+    let pageTitle = "Tidak diketahui";
+
+    try {
+        // Fetch HTML dari target URL (timeout 5 detik biar gak nunggu kelamaan)
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        const fetchRes = await fetch(url, { 
+            headers: { 
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' 
+            },
+            signal: controller.signal
+        });
+        
+        clearTimeout(timeoutId);
+        
+        const html = await fetchRes.text();
+        
+        // 1. Ekstrak Title menggunakan Regex
+        const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
+        if (titleMatch) {
+            pageTitle = titleMatch[1].trim();
+        }
+
+        // 2. Bersihkan HTML untuk mengambil teks murni
+        // Hapus tag script & style biar kodenya gak ikut kebaca AI
+        let cleanText = html.replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, '')
+                            .replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, '')
+                            // Hapus semua tag HTML
+                            .replace(/<[^>]+>/g, ' ')
+                            // Hapus spasi berlebih
+                            .replace(/\s+/g, ' ')
+                            .trim();
+        
+        // Ambil 3500 karakter pertama aja biar AI nggak jebol tokennya (ini udah cukup banget buat nemuin kata-kata penipuan)
+        webContent = cleanText.substring(0, 3500);
+
+    } catch (err) {
+        console.warn(`Scraping gagal untuk ${url}:`, err.message);
+        // Kalau gagal nge-scrape (misal webnya down atau ngeblokir fetch server), AI tetep bakal jalan ngecek URL-nya doang
+    }
+
+    // --- PROSES ANALISIS ZANNAI ---
     try {
         const model = genAI.getGenerativeModel({ 
             model: "gemini-2.5-flash",
@@ -72,7 +116,8 @@ module.exports = async (req, res) => {
             }
         });
 
-        const prompt = `Analisis URL berikut ini:\nURL: ${url}\n\nBerikan response JSON berdasarkan System Rules.`;
+        // Prompt sekarang menyertakan Title dan Isi Web!
+        const prompt = `Tolong analisis website berikut ini:\n\nURL: ${url}\nJudul Halaman: ${pageTitle}\nIsi Teks Web: ${webContent}\n\nBerikan response JSON sesuai System Rules.`;
 
         const result = await model.generateContent({
             contents: [{ role: "user", parts: [{ text: prompt }] }],
