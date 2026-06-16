@@ -1,0 +1,15 @@
+{
+  "name": "zannscan",
+  "version": "1.0.0",
+  "description": "ZannScan - AI Phishing URL Scanner",
+  "main": "api/scan.js",
+  "scripts": {
+    "start": "node api/scan.js"
+  },
+  "dependencies": {
+    "@google/generative-ai": "^0.11.1"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
