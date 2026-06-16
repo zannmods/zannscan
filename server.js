@@ -319,7 +319,76 @@ module.exports = async (req, res) => {
     }
 
     const { url } = req.body;
+let preScore = 0;
+let preReasons = [];
 
+const hostname = new URL(url).hostname.toLowerCase();
+
+const whitelist = [
+  "bca.co.id",
+  "bri.co.id",
+  "bni.co.id",
+  "bankmandiri.co.id",
+  "dana.id",
+  "kominfo.go.id",
+  "kemensos.go.id",
+  "bpjs-kesehatan.go.id"
+];
+
+const suspiciousBrands = [
+  "bca",
+  "bri",
+  "bni",
+  "mandiri",
+  "dana",
+  "ovo",
+  "gopay",
+  "shopeepay"
+];
+
+const bansosKeywords = [
+  "bansos",
+  "blt",
+  "subsidi",
+  "prakerja",
+  "bantuan",
+  "dana-kaget",
+  "kuota-gratis"
+];
+
+const isWhitelisted = whitelist.some(
+  domain =>
+    hostname === domain ||
+    hostname.endsWith("." + domain)
+);
+const foundBansos = bansosKeywords.filter(
+  keyword => hostname.includes(keyword)
+);
+
+if (
+  foundBansos.length > 0 &&
+  !hostname.endsWith(".go.id")
+) {
+  preScore += 95;
+
+  preReasons.push(
+    "Domain menggunakan kata bantuan sosial namun bukan domain pemerintah."
+  );
+}
+const foundBrands = suspiciousBrands.filter(
+  brand => hostname.includes(brand)
+);
+
+if (
+  foundBrands.length > 0 &&
+  !isWhitelisted
+) {
+  preScore += 80;
+
+  preReasons.push(
+    "Domain mengandung nama bank/e-wallet namun bukan domain resmi."
+  );
+}
     if (!url) {
         return res.status(400).json({ error: 'URL tidak boleh kosong.' });
     }
@@ -343,7 +412,37 @@ module.exports = async (req, res) => {
         clearTimeout(timeoutId);
         
         const html = await fetchRes.text();
-        
+        const sensitiveFields = [
+  "password",
+  "otp",
+  "pin",
+  "cvv",
+  "nik",
+  "kk"
+];
+
+const foundSensitive = sensitiveFields.filter(
+  field =>
+    html.toLowerCase().includes(field)
+);
+
+if (foundSensitive.length) {
+  preScore += 30;
+
+  preReasons.push(
+    "Website meminta data sensitif."
+  );
+}
+if (
+  html.includes('type="password"') ||
+  html.includes("type='password'")
+) {
+  preScore += 25;
+
+  preReasons.push(
+    "Terdapat form password."
+  );
+}
         // 1. Ekstrak Title menggunakan Regex
         const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
         if (titleMatch) {
@@ -370,6 +469,21 @@ module.exports = async (req, res) => {
 
     // --- PROSES ANALISIS ZANNAI ---
     try {
+    if (preScore >= 90) {
+  return res.status(200).json({
+    success: true,
+    data: {
+      score: Math.min(preScore, 100),
+      riskLevel: "PHISHING / SCAM SANGAT TINGGI",
+      analysis: {
+        domain: hostname
+      },
+      reasons: preReasons,
+      conclusion:
+        "Website memiliki indikator kuat phishing atau penipuan."
+    }
+  });
+}
         const model = genAI.getGenerativeModel({ 
             model: "gemini-2.5-flash",
             generationConfig: {
@@ -378,7 +492,26 @@ module.exports = async (req, res) => {
         });
 
         // Prompt sekarang menyertakan Title dan Isi Web!
-        const prompt = `Tolong analisis website berikut ini:\n\nURL: ${url}\nJudul Halaman: ${pageTitle}\nIsi Teks Web: ${webContent}\n\nBerikan response JSON sesuai System Rules.`;
+        const prompt = `
+URL: ${url}
+
+Hostname:
+${hostname}
+
+PreScore:
+${preScore}
+
+Alasan Awal:
+${preReasons.join("\n")}
+
+Judul:
+${pageTitle}
+
+Isi Web:
+${webContent}
+
+Lakukan analisis mendalam dan keluarkan JSON.
+`;
 
         const result = await model.generateContent({
             contents: [{ role: "user", parts: [{ text: prompt }] }],
