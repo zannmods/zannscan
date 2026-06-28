@@ -21,48 +21,39 @@ app.get('/', (req, res) => {
     res.sendFile(indexPath);
 });
 
-// ===== SYSTEM PROMPT ZANNSCAN AI (DIPERBARUI AGAR LEBIH PINTAR & BERVARIASI) =====
+// ===== SYSTEM PROMPT ZANNSCAN AI (OTAK UTAMA - STRICT JSON) =====
 const SYSTEM_PROMPT = `
-Kamu adalah ZannScan AI Enterprise Edition, AI Cybersecurity Analyst spesialis deteksi Phishing, Scam, Malware, Fraud, dan Website Berbahaya buatan ZannMods.
+Kamu adalah ZannScan AI Enterprise, AI Investigator Keamanan Siber tingkat lanjut.
+Tugasmu adalah menganalisis URL dan Source Code HTML untuk mencari celah phishing, scam, atau penipuan.
 
-TUGAS UTAMA:
-Kamu akan diberikan URL target, Judul Halaman, dan KUTIPAN SOURCE CODE HTML. Pahami konteks dari web tersebut dan berikan analisis layaknya pakar keamanan siber senior yang memiliki pemikiran analitis tajam.
+ATURAN WAJIB (JIKA DILANGGAR SISTEM AKAN HANCUR):
+1. KAMU HANYA BOLEH MENGELUARKAN OUTPUT BERUPA JSON MURNI. JANGAN ADA TEKS PEMBUKA/PENUTUP.
+2. SKOR HARUS SANGAT BERVARIASI: Analisis dengan sangat kritis. Jangan pernah gunakan angka bulat seperti 20, 30, 40, atau 50. Gunakan angka probabilitas pasti seperti 11, 24, 37, 58, 63, 84, 91.
+3. KESIMPULAN & ALASAN HARUS BERBEDA-BEDA: Gunakan gaya bahasa detektif siber. Jelaskan temuan teknis (misal: "Ditemukan form input tanpa SSL yang mencurigakan..." atau "Domain menggunakan ekstensi yang sering dipakai untuk bypass keamanan...").
 
-FAKTOR ANALISIS:
-1. DOMAIN & URL: Ekstensi TLD, panjang domain, taktik penyamaran brand.
-2. FORM SENSITIF: Apakah web meminta OTP, PIN, Password, NIK secara mencurigakan?
-3. SOCIAL ENGINEERING: Deteksi manipulasi kata (bansos, dana kaget, klaim pulsa, dll).
-4. SOURCE CODE: Deteksi elemen form atau struktur yang tidak wajar.
+SKALA RISIKO:
+0-15  : AMAN (Situs wajar/terpercaya)
+16-35 : RISIKO RENDAH (Minim ancaman, tapi bukan domain resmi besar)
+36-60 : MENCURIGAKAN (Ada elemen form atau teks yang memicu peringatan)
+61-80 : BERBAHAYA (Indikasi kuat manipulasi/scam)
+81-100: PHISHING / SCAM (Situs pencuri data)
 
-ATURAN SKORING & VARIASI (SANGAT PENTING):
-- SKOR HARUS SPESIFIK & DINAMIS: JANGAN PERNAH memberikan skor bulat yang berulang-ulang (seperti 20, 30, 40). Berikan angka yang spesifik dan rasional dari hasil perhitunganmu (misal: 12, 17, 26, 33, 48, 62, 79, 94).
-- 0-20  : AMAN (Website normal, berikan skor spesifik antara 1-20)
-- 21-40 : RISIKO RENDAH (Mungkin web pribadi/blog biasa tanpa form aneh)
-- 41-60 : MENCURIGAKAN (Ada indikasi aneh tapi belum pasti phising)
-- 61-80 : BERBAHAYA (Kuat dugaan penipuan)
-- 81-100: PHISHING / SCAM (Berbahaya mencuri data sensitif)
-- JANGAN menganggap domain .com atau .my.id otomatis berbahaya. Nilai dari keseluruhan konteks HTML dan Teksnya!
-- PENJELASAN (REASONS): Buatlah alasan dengan gaya bahasa yang profesional, tajam, natural, dan BERVARIASI. Jangan gunakan template kalimat yang sama terus-menerus. Buktikan bahwa kamu sedang "berpikir".
-- KESIMPULAN (CONCLUSION): Rangkum dalam kalimat yang fresh, edukatif, dan tidak kaku layaknya robot.
-
-KAMU WAJIB MEMBALAS HANYA DENGAN FORMAT JSON VALID. JANGAN GUNAKAN MARKDOWN \`\`\`json.
-
-FORMAT OUTPUT:
+FORMAT JSON WAJIB (Tanpa \`\`\`json):
 {
-  "score": (angka spesifik 0-100),
-  "riskLevel": "AMAN / RISIKO RENDAH / MENCURIGAKAN / BERBAHAYA / PHISHING",
+  "score": <angka_spesifik>,
+  "riskLevel": "<kategori>",
   "analysis": {
-    "domain": "nama-domain",
-    "isBrandImpersonation": false,
-    "hasLoginForm": false,
-    "requestsSensitiveData": false,
-    "suspiciousKeywordsFound": []
+    "domain": "<domain_target>",
+    "isBrandImpersonation": <true/false>,
+    "hasLoginForm": <true/false>,
+    "requestsSensitiveData": <true/false>,
+    "suspiciousKeywordsFound": ["kata1", "kata2"]
   },
   "reasons": [
-    "Penjelasan analitis dan unik pertama...",
-    "Penjelasan analitis dan unik kedua..."
+    "<alasan_teknis_1_yang_sangat_spesifik_dan_panjang>",
+    "<alasan_teknis_2_berdasarkan_source_code_atau_URL>"
   ],
-  "conclusion": "Kesimpulan akhir yang natural dan bervariasi."
+  "conclusion": "<Kesimpulan_akhir_yang_tajam_dan_bervariasi>"
 }
 `;
 
@@ -83,17 +74,18 @@ async function analyzeWithAI(promptText) {
                 { "pluginId": null, "content": promptText, "role": "user" }
             ],
             "prompt": "",  
-            "temperature": 0.7 // Ditingkatkan agar AI lebih kreatif, bervariasi, dan tidak statis
+            "temperature": 0.8 // Ditingkatkan agar analisis tidak repetitif
         }, { 
             headers: {
                 "Accept": "/*/",
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0"
-            }
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36"
+            },
+            timeout: 15000 // Tambah waktu agar AI punya waktu berpikir lebih lama
         });
         return response.data;
     } catch (error) {
-        console.error("AI Error:", error.message);
-        throw new Error("Server ZannScan AI sedang sibuk. Coba lagi!");
+        console.error("AI API Error:", error.message);
+        throw new Error("Server AI gagal merespons tepat waktu.");
     }
 }
 
@@ -109,69 +101,79 @@ app.post("/api/scan", async (req, res) => {
     try {
         hostname = new URL(url).hostname.toLowerCase();
     } catch (e) {
-        return res.status(400).json({ success: false, error: 'Format URL tidak valid. Sertakan http:// atau https://' });
+        return res.status(400).json({ success: false, error: 'Format URL tidak valid.' });
     }
 
-    console.log(`🔍 [ZannScan] Memulai pemindaian untuk: ${url}`);
+    console.log(`🔍 [ZannScan] Memulai pemindaian (AI Engine) untuk: ${url}`);
 
     let pageTitle = "Tidak diketahui";
     let extractedHTML = "Gagal mengambil source code.";
     let visibleText = "";
 
-    // PROSES SCRAPING
+    // PROSES SCRAPING DENGAN CHEERIO
     try {
         const fetchRes = await axios.get(url, {
             headers: { 
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
             },
-            timeout: 8000
+            timeout: 7000
         });
 
         const $ = cheerio.load(fetchRes.data);
         pageTitle = $('title').text().trim() || "Tidak ada judul";
 
+        // Ambil elemen form
         let formHTML = "";
-        $('form').each((i, el) => {
+        $('form, input, button').each((i, el) => {
             $(el).find('*').removeAttr('style').removeAttr('class');
-            formHTML += $.html(el) + "\n\n";
+            formHTML += $.html(el) + "\n";
         });
 
         $('script, style, nav, footer, iframe, svg, img').remove();
-        visibleText = $('body').text().replace(/\s+/g, ' ').trim().substring(0, 1500);
+        visibleText = $('body').text().replace(/\s+/g, ' ').trim().substring(0, 1000);
 
-        extractedHTML = formHTML.trim() ? formHTML.substring(0, 2000) : "Tidak ditemukan form login/input pada halaman.";
+        extractedHTML = formHTML.trim() ? formHTML.substring(0, 1500) : "Tidak ditemukan form login/input pada halaman.";
 
     } catch (err) {
-        console.warn(`[Scraping Warning] Gagal fetch HTML. Error: ${err.message}`);
-        extractedHTML = `Gagal memuat source code web. AI hanya akan menilai berdasarkan struktur domain dan TLD. Error: ${err.message}`;
+        console.warn(`[Scraping Warning] Gagal membaca isi web. Fokus ke analisis URL.`);
+        extractedHTML = `Isi web disembunyikan/terblokir. Lakukan tebakan analitis tingkat lanjut berdasarkan nama URL, TLD, dan pola serangan umum.`;
     }
 
-    // SUSUN PROMPT
+    // ANTI-CACHE SEED & DYNAMIC PROMPT
+    const timestamp = new Date().toISOString();
+    const dynamicSeed = Math.floor(Math.random() * 10000);
+    
     const aiPrompt = `
-Tolong evaluasi website ini secara kritis dan dinamis!
+[ID Analisis: ${dynamicSeed} | Waktu: ${timestamp}]
+Tolong evaluasi website ini secara kritis! Lakukan analisis mendalam!
 
 URL TARGET: ${url}
 HOSTNAME: ${hostname}
 JUDUL HALAMAN: ${pageTitle}
 
---- TEKS TERLIHAT ---
+--- TEKS TERBACA DI WEB ---
 ${visibleText || "Tidak ada teks yang dapat dibaca."}
 
 --- SOURCE CODE (Form & Input) ---
 ${extractedHTML}
 
-Berikan skor analisis keamanan yang sangat spesifik (hindari skor puluhan pas seperti 20, 30) serta alasan yang unik dan tidak kaku! Ingat, HANYA balas JSON!
+INGAT:
+1. Keluarkan HANYA JSON.
+2. JANGAN gunakan skor 20, 30, 40. Gunakan skor yang dinamis (contoh: 18, 34, 57, 82).
+3. Berikan alasan teknis yang komprehensif dan bervariasi!
 `;
 
-    // KIRIM KE AI
+    // KIRIM KE AI & PROSES JSON
     try {
-        console.log(`🧠 [ZannScan] AI sedang berpikir...`);
+        console.log(`🧠 [ZannScan] Menunggu analisis mendalam dari AI...`);
         const aiResponseText = await analyzeWithAI(aiPrompt);
         
+        // BULLETPROOF JSON EXTRACTOR (Mencegah Error Parsing yang memicu skor 30 terus)
         let cleanJsonText = aiResponseText;
-        if (cleanJsonText.startsWith("```")) {
-            cleanJsonText = cleanJsonText.replace(/^```(json)?|```$/gi, '').trim();
+        const jsonMatch = cleanJsonText.match(/\{[\s\S]*\}/);
+        
+        if (jsonMatch) {
+            cleanJsonText = jsonMatch[0]; // Ambil hanya objek JSON, abaikan teks lain
         }
 
         const jsonResult = JSON.parse(cleanJsonText);
@@ -182,10 +184,10 @@ Berikan skor analisis keamanan yang sangat spesifik (hindari skor puluhan pas se
         });
 
     } catch (error) {
-        console.error("🚨 ZannScan AI Parsing Error:", error);
+        console.error("🚨 ZannScan AI Parsing Error:", error.message);
         return res.status(500).json({ 
             success: false, 
-            error: 'Gagal memproses hasil AI.',
+            error: 'Gagal memproses hasil AI. Format tidak valid atau timeout.',
         });
     }
 });
