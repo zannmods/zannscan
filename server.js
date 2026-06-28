@@ -3,13 +3,35 @@ const axios = require("axios");
 const cors = require("cors");
 const cheerio = require("cheerio");
 const path = require("path");
+const fs = require("fs"); // Tambahkan modul fs untuk membaca letak file
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
+// Setup agar file statis bisa diakses dari folder public atau folder utama
 app.use(express.static(path.join(__dirname, "public")));
+app.use(express.static(__dirname)); 
+
+// ===== FIX NOT FOUND: Endpoint untuk menampilkan UI Frontend =====
+app.get("/", (req, res) => {
+    const publicPath = path.join(__dirname, "public", "index.html");
+    const rootPath = path.join(__dirname, "index.html");
+    
+    // Cek apakah file index.html ada di dalam folder 'public'
+    if (fs.existsSync(publicPath)) {
+        res.sendFile(publicPath);
+    } 
+    // Jika tidak ada di folder 'public', cek apakah ada di luar (sejajar dengan index.js)
+    else if (fs.existsSync(rootPath)) {
+        res.sendFile(rootPath);
+    } 
+    // Jika masih tidak ada, beri peringatan
+    else {
+        res.status(404).send("<h2>Error 404: File index.html tidak ditemukan!</h2><p>Pastikan kamu sudah menyimpan kode frontend ke dalam file bernama <b>index.html</b>.</p>");
+    }
+});
 
 // ===== SYSTEM PROMPT ZANNSCAN AI =====
 // Prompt ini dimodifikasi dari versi kamu agar fokus ke analisis HTML dan Source Code
