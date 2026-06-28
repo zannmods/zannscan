@@ -1,530 +1,197 @@
-const { GoogleGenerativeAI } = require("@google/generative-ai");
+const express = require("express");
+const axios = require("axios");
+const cors = require("cors");
+const cheerio = require("cheerio");
+const path = require("path");
 
-// Inisialisasi Gemini AI
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "ISI_API_KEY_KAMU_DISINI_JIKA_LOKAL");
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-// System Prompt ZannScan AI - Diupdate biar AI baca konten web
+app.use(cors());
+app.use(express.json());
+app.use(express.static(path.join(__dirname, "public")));
+
+// ===== SYSTEM PROMPT ZANNSCAN AI =====
+// Prompt ini dimodifikasi dari versi kamu agar fokus ke analisis HTML dan Source Code
 const SYSTEM_PROMPT = `
-Kamu adalah ZannScan AI Enterprise Edition, AI Cybersecurity Analyst spesialis deteksi Phishing, Scam, Malware, Fraud, dan Website Berbahaya.
-
-TUGAS:
-Analisis URL, HTML, metadata, teks halaman, SSL, redirect, domain age, dan konteks website secara mendalam.
-
-JANGAN PERNAH menentukan phishing hanya berdasarkan TLD.
-
-==================================================
-FAKTOR ANALISIS
-==================================================
-
-1. DOMAIN ANALYSIS
-- Domain utama
-- Subdomain
-- TLD
-- Panjang domain
-- Karakter aneh
-- Angka berlebihan
-- Typosquatting
-
-Contoh:
-bca-login-security.com
-
-Mirip:
-bca.co.id
-
-Maka indikasi phishing tinggi.
-
-==================================================
-
-2. BRAND IMPERSONATION
-==================================================
-
-Deteksi penyalahgunaan nama:
-
-Bank:
-- BCA
-- BRI
-- BNI
-- Mandiri
-- CIMB
-- Permata
-
-E-Wallet:
-- DANA
-- OVO
-- GoPay
-- ShopeePay
-
-Pemerintah:
-- Kemensos
-- Kominfo
-- Kemdikbud
-- BPJS
-- Pajak
-- Polri
-
-Jika nama brand muncul pada URL atau konten
-tetapi domain bukan domain resmi:
-
-Tambahkan skor 40-80.
-
-==================================================
-
-3. LOGIN FORM ANALYSIS
-==================================================
-
-Cari:
-
-- password field
-- pin field
-- otp field
-- nomor kartu
-- cvv
-- nik
-- kk
-- email
-- username
-
-Jika website meminta data sensitif:
-
-Tambahkan risiko.
-
-Jika meminta:
-
-- PIN
-- OTP
-- CVV
-- Password Bank
-
-Tambahkan risiko sangat tinggi.
-
-==================================================
-
-4. SOCIAL ENGINEERING DETECTION
-==================================================
-
-Cari kata:
-
-- hadiah
-- bonus
-- claim
-- klaim
-- gratis
-- bantuan
-- bansos
-- subsidi
-- dana kaget
-- kuota gratis
-- verifikasi
-- akun diblokir
-- akun dibekukan
-- segera
-- urgent
-- batas waktu
-- validasi
-- konfirmasi
-
-Semakin banyak ditemukan,
-semakin tinggi skor.
-
-==================================================
-
-5. BANSOS SCAM DETECTION
-==================================================
-
-Jika ditemukan:
-
-- bansos
-- bantuan sosial
-- blt
-- subsidi
-- prakerja
-- bantuan pemerintah
-
-Maka:
-
-Periksa apakah domain resmi pemerintah.
-
-Whitelist:
-- *.go.id
-
-Jika bukan domain pemerintah:
-
-Tambahkan skor 70-100.
-
-Alasan:
-Program pemerintah tidak didistribusikan melalui domain acak.
-
-==================================================
-
-6. DOMAIN REPUTATION
-==================================================
-
-Jika tersedia:
-
-Periksa:
-
-- Google Safe Browsing
-- PhishTank
-- OpenPhish
-- VirusTotal
-- URLHaus
-
-Jika terdeteksi:
-
-score = 100
-
-==================================================
-
-7. DOMAIN AGE
-==================================================
-
-Jika domain:
-
-< 7 hari:
-+40
-
-< 30 hari:
-+25
-
-< 90 hari:
-+15
-
-==================================================
-
-8. SSL ANALYSIS
-==================================================
-
-Periksa:
-
-- HTTPS
-- Sertifikat valid
-- Issuer
-
-Tidak memiliki HTTPS:
-+20
-
-HTTPS tidak membuat website otomatis aman.
-
-==================================================
-
-9. REDIRECT ANALYSIS
-==================================================
-
-Deteksi:
-
-- Multiple Redirect
-- URL Shortener
-- Redirect tersembunyi
-
-Tambahkan skor sesuai tingkat risiko.
-
-==================================================
-
-10. MALWARE INDICATORS
-==================================================
-
-Cari:
-
-- Obfuscated JavaScript
-- eval()
-- atob()
-- document.write()
-- hidden iframe
-- crypto miner
-- auto download
-
-Tambahkan skor tinggi.
-
-==================================================
-SCORING
-==================================================
-
-0-20
-AMAN
-
-21-40
-RISIKO RENDAH
-
-41-60
-MENCURIGAKAN
-
-61-80
-BERBAHAYA
-
-81-100
-PHISHING / SCAM SANGAT TINGGI
-
-==================================================
-ATURAN PENTING
-==================================================
-
-- Jangan menganggap domain .com berbahaya.
-- Jangan menganggap domain .my.id berbahaya.
-- Jangan menganggap HTTPS berarti aman.
-- Prioritaskan bukti nyata dibanding asumsi.
-- Jelaskan alasan teknis secara rinci.
-- Jika data kurang, nyatakan "belum cukup bukti".
-
-==================================================
-OUTPUT JSON
-==================================================
-
+Kamu adalah ZannScan AI Enterprise Edition, AI Cybersecurity Analyst spesialis deteksi Phishing, Scam, Malware, Fraud, dan Website Berbahaya buatan ZannMods.
+
+TUGAS UTAMA:
+Kamu akan diberikan URL target, Judul Halaman, dan KUTIPAN SOURCE CODE HTML (khususnya elemen form, input, dan teks penting).
+Lakukan analisis mendalam layaknya analis keamanan senior. Pahami konteks dari source code tersebut.
+
+FAKTOR ANALISIS:
+1. DOMAIN & URL: Apakah URL mencoba meniru brand terkenal (BCA, BRI, DANA, dll) tapi menggunakan ekstensi aneh?
+2. FORM SENSITIF: Analisis tag <input> dalam HTML. Apakah meminta password, PIN, OTP, NIK, atau CVV kartu kredit di luar konteks yang wajar?
+3. SOCIAL ENGINEERING: Cari kata-kata seperti "klaim bonus", "bansos", "kuota gratis", "segera verifikasi".
+4. MALWARE / SKRIP: Apakah ada indikasi skrip tersembunyi, iframe mencurigakan, atau metode obfuscation?
+
+SKALA SKOR (0-100):
+0-20  : AMAN (Website normal)
+21-40 : RISIKO RENDAH (Sedikit mencurigakan tapi mungkin aman)
+41-60 : MENCURIGAKAN (Harus waspada)
+61-80 : BERBAHAYA (Indikasi kuat penipuan)
+81-100: PHISHING / SCAM (Sangat berbahaya, mencuri data)
+
+ATURAN WAJIB:
+- JANGAN PERNAH menganggap domain .com atau .my.id otomatis berbahaya.
+- Prioritaskan BUKTI NYATA dari source code HTML yang diberikan (misal: "Ditemukan form meminta OTP").
+- KAMU WAJIB MEMBALAS HANYA DENGAN FORMAT JSON VALID. Jangan tambahkan teks apapun di luar JSON, jangan gunakan markdown \`\`\`json.
+
+FORMAT OUTPUT JSON YANG DIHARAPKAN:
 {
   "score": 0,
   "riskLevel": "AMAN",
   "analysis": {
-    "domain": "",
-    "tld": "",
+    "domain": "nama-domain",
     "isBrandImpersonation": false,
-    "brandDetected": [],
-    "domainAgeDays": null,
-    "hasSSL": false,
-    "sslValid": false,
     "hasLoginForm": false,
     "requestsSensitiveData": false,
-    "socialEngineeringKeywords": [],
-    "suspiciousScripts": [],
-    "redirectCount": 0,
-    "safeBrowsingDetected": false,
-    "phishingDatabaseDetected": false,
-    "pageTitle": ""
+    "suspiciousKeywordsFound": []
   },
-  "reasons": [],
-  "conclusion": ""
+  "reasons": [
+    "Penjelasan 1 berdasarkan analisis HTML",
+    "Penjelasan 2 berdasarkan analisis URL"
+  ],
+  "conclusion": "Kesimpulan akhir yang mudah dipahami orang awam."
 }
-
-Jika memungkinkan, lakukan pencarian internet terlebih dahulu untuk:
-- domain age
-- reputasi domain
-- blacklist phishing
-- status malware
-
-Lalu gabungkan hasil tersebut sebelum menentukan skor akhir.
 `;
 
-module.exports = async (req, res) => {
-    // Enable CORS
-    res.setHeader('Access-Control-Allow-Credentials', true);
-    res.setHeader('Access-Control-Allow-Origin', '*');
-    res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-    res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
-
-    if (req.method === 'OPTIONS') {
-        res.status(200).end();
-        return;
-    }
-
-    if (req.method !== 'POST') {
-        return res.status(405).json({ error: 'Method Not Allowed' });
-    }
-
-    const { url } = req.body;
-let preScore = 0;
-let preReasons = [];
-
-const hostname = new URL(url).hostname.toLowerCase();
-
-const whitelist = [
-  "bca.co.id",
-  "bri.co.id",
-  "bni.co.id",
-  "bankmandiri.co.id",
-  "dana.id",
-  "kominfo.go.id",
-  "kemensos.go.id",
-  "bpjs-kesehatan.go.id"
-];
-
-const suspiciousBrands = [
-  "bca",
-  "bri",
-  "bni",
-  "mandiri",
-  "dana",
-  "ovo",
-  "gopay",
-  "shopeepay"
-];
-
-const bansosKeywords = [
-  "bansos",
-  "blt",
-  "subsidi",
-  "prakerja",
-  "bantuan",
-  "dana-kaget",
-  "kuota-gratis"
-];
-
-const isWhitelisted = whitelist.some(
-  domain =>
-    hostname === domain ||
-    hostname.endsWith("." + domain)
-);
-const foundBansos = bansosKeywords.filter(
-  keyword => hostname.includes(keyword)
-);
-
-if (
-  foundBansos.length > 0 &&
-  !hostname.endsWith(".go.id")
-) {
-  preScore += 95;
-
-  preReasons.push(
-    "Domain menggunakan kata bantuan sosial namun bukan domain pemerintah."
-  );
-}
-const foundBrands = suspiciousBrands.filter(
-  brand => hostname.includes(brand)
-);
-
-if (
-  foundBrands.length > 0 &&
-  !isWhitelisted
-) {
-  preScore += 80;
-
-  preReasons.push(
-    "Domain mengandung nama bank/e-wallet namun bukan domain resmi."
-  );
-}
-    if (!url) {
-        return res.status(400).json({ error: 'URL tidak boleh kosong.' });
-    }
-
-    // --- PROSES EKSTRAKSI KONTEN WEB (SCRAPING) ---
-    let webContent = "Tidak dapat mengekstrak isi web (kemungkinan diblokir oleh keamanan server tujuan). Analisis hanya dilakukan pada struktur URL.";
-    let pageTitle = "Tidak diketahui";
-
+// ===== FUNGSI API ZANNAI =====
+async function analyzeWithAI(promptText) {
     try {
-        // Fetch HTML dari target URL (timeout 5 detik biar gak nunggu kelamaan)
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-
-        const fetchRes = await fetch(url, { 
-            headers: { 
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36' 
+        let response = await axios.post("https://chateverywhere.app/api/chat/", {
+            "model": {
+                "id": "gpt-4",
+                "name": "GPT-4",
+                "maxLength": 32000,
+                "tokenLimit": 8000,
+                "completionTokenLimit": 5000,
+                "deploymentName": "gpt-4"
             },
-            signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        
-        const html = await fetchRes.text();
-        const sensitiveFields = [
-  "password",
-  "otp",
-  "pin",
-  "cvv",
-  "nik",
-  "kk"
-];
-
-const foundSensitive = sensitiveFields.filter(
-  field =>
-    html.toLowerCase().includes(field)
-);
-
-if (foundSensitive.length) {
-  preScore += 30;
-
-  preReasons.push(
-    "Website meminta data sensitif."
-  );
-}
-if (
-  html.includes('type="password"') ||
-  html.includes("type='password'")
-) {
-  preScore += 25;
-
-  preReasons.push(
-    "Terdapat form password."
-  );
-}
-        // 1. Ekstrak Title menggunakan Regex
-        const titleMatch = html.match(/<title[^>]*>([^<]+)<\/title>/i);
-        if (titleMatch) {
-            pageTitle = titleMatch[1].trim();
-        }
-
-        // 2. Bersihkan HTML untuk mengambil teks murni
-        // Hapus tag script & style biar kodenya gak ikut kebaca AI
-        let cleanText = html.replace(/<script[^>]*>([\s\S]*?)<\/script>/gi, '')
-                            .replace(/<style[^>]*>([\s\S]*?)<\/style>/gi, '')
-                            // Hapus semua tag HTML
-                            .replace(/<[^>]+>/g, ' ')
-                            // Hapus spasi berlebih
-                            .replace(/\s+/g, ' ')
-                            .trim();
-        
-        // Ambil 3500 karakter pertama aja biar AI nggak jebol tokennya (ini udah cukup banget buat nemuin kata-kata penipuan)
-        webContent = cleanText.substring(0, 3500);
-
-    } catch (err) {
-        console.warn(`Scraping gagal untuk ${url}:`, err.message);
-        // Kalau gagal nge-scrape (misal webnya down atau ngeblokir fetch server), AI tetep bakal jalan ngecek URL-nya doang
-    }
-
-    // --- PROSES ANALISIS ZANNAI ---
-    try {
-    if (preScore >= 90) {
-  return res.status(200).json({
-    success: true,
-    data: {
-      score: Math.min(preScore, 100),
-      riskLevel: "PHISHING / SCAM SANGAT TINGGI",
-      analysis: {
-        domain: hostname
-      },
-      reasons: preReasons,
-      conclusion:
-        "Website memiliki indikator kuat phishing atau penipuan."
-    }
-  });
-}
-        const model = genAI.getGenerativeModel({ 
-            model: "gemini-2.5-flash",
-            generationConfig: {
-                responseMimeType: "application/json"
+            "messages": [
+                { "pluginId": null, "content": SYSTEM_PROMPT, "role": "system" },
+                { "pluginId": null, "content": promptText, "role": "user" }
+            ],
+            "prompt": "",  
+            "temperature": 0.3 // Temperature direndahkan agar analisis lebih logis dan konsisten
+        }, { 
+            headers: {
+                "Accept": "/*/",
+                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) Chrome/120.0.0.0"
             }
         });
+        return response.data;
+    } catch (error) {
+        console.error("AI Error:", error.message);
+        throw new Error("Waduh, server ZannScan AI lagi sibuk nih bree. Coba lagi bentar ya! 🛠️");
+    }
+}
 
-        // Prompt sekarang menyertakan Title dan Isi Web!
-        const prompt = `
-URL: ${url}
+// ===== ENDPOINT SCANNER =====
+app.post("/api/scan", async (req, res) => {
+    const { url } = req.body;
 
-Hostname:
-${hostname}
+    if (!url) {
+        return res.status(400).json({ success: false, error: 'URL target tidak boleh kosong.' });
+    }
 
-PreScore:
-${preScore}
+    let hostname;
+    try {
+        hostname = new URL(url).hostname.toLowerCase();
+    } catch (e) {
+        return res.status(400).json({ success: false, error: 'Format URL tidak valid. Sertakan http:// atau https://' });
+    }
 
-Alasan Awal:
-${preReasons.join("\n")}
+    console.log(`🔍 [ZannScan] Memulai pemindaian untuk: ${url}`);
 
-Judul:
-${pageTitle}
+    let pageTitle = "Tidak diketahui";
+    let extractedHTML = "Gagal mengambil source code.";
+    let visibleText = "";
 
-Isi Web:
-${webContent}
-
-Lakukan analisis mendalam dan keluarkan JSON.
-`;
-
-        const result = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: prompt }] }],
-            systemInstruction: { parts: [{ text: SYSTEM_PROMPT }] }
+    // 1. PROSES SCRAPING & EKSTRAKSI SOURCE CODE
+    try {
+        const fetchRes = await axios.get(url, {
+            headers: { 
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
+            },
+            timeout: 8000 // Maksimal 8 detik nunggu webnya
         });
 
-        const responseText = result.response.text();
-        const jsonResult = JSON.parse(responseText);
+        const $ = cheerio.load(fetchRes.data);
+        
+        // Ambil Judul
+        pageTitle = $('title').text().trim() || "Tidak ada judul";
 
-        return res.status(200).json({ success: true, data: jsonResult });
+        // Ekstrak elemen-elemen penting (Form, Input, Button) untuk dianalisis AI
+        // Kita tidak mengirim seluruh HTML agar tidak kena limit token, tapi kita kirim struktur intinya
+        let formHTML = "";
+        $('form').each((i, el) => {
+            // Hapus atribut yang ga penting biar bersih
+            $(el).find('*').removeAttr('style').removeAttr('class');
+            formHTML += $.html(el) + "\n\n";
+        });
+
+        // Ambil teks yang terlihat oleh user (berguna untuk deteksi social engineering)
+        $('script, style, nav, footer, iframe, svg, img').remove();
+        visibleText = $('body').text().replace(/\s+/g, ' ').trim().substring(0, 1500);
+
+        extractedHTML = formHTML.trim() ? formHTML.substring(0, 2000) : "Tidak ditemukan tag <form> pada halaman ini.";
+
+    } catch (err) {
+        console.warn(`[Scraping Warning] Gagal fetch HTML untuk ${url}. Alasan: ${err.message}`);
+        extractedHTML = `Gagal diakses secara publik (Error: ${err.message}). Analisis hanya akan bergantung pada struktur URL dan Domain.`;
+    }
+
+    // 2. SUSUN PROMPT UNTUK AI
+    const aiPrompt = `
+Tolong analisis website berikut secara detail:
+
+URL TARGET: ${url}
+HOSTNAME: ${hostname}
+JUDUL HALAMAN: ${pageTitle}
+
+--- TEKS TERLIHAT DI WEBSITE ---
+${visibleText || "Tidak ada teks yang dapat dibaca."}
+
+--- SOURCE CODE HTML (Elemen Form & Input) ---
+${extractedHTML}
+
+Lakukan analisis berdasarkan data di atas. Apakah ada form yang meminta data sensitif? Apakah ada indikasi penipuan dari teksnya?
+Ingat, balas HANYA dengan JSON valid!
+`;
+
+    // 3. KIRIM KE AI DAN PARSING HASILNYA
+    try {
+        console.log(`🧠 [ZannScan] Menganalisis data dengan AI...`);
+        const aiResponseText = await analyzeWithAI(aiPrompt);
+        
+        // Membersihkan jika AI masih ngeyel ngasih markdown ```json
+        let cleanJsonText = aiResponseText;
+        if (cleanJsonText.startsWith("```")) {
+            cleanJsonText = cleanJsonText.replace(/^```(json)?|```$/gi, '').trim();
+        }
+
+        const jsonResult = JSON.parse(cleanJsonText);
+
+        return res.status(200).json({
+            success: true,
+            data: jsonResult
+        });
 
     } catch (error) {
-        console.error("AI Analysis Error:", error);
-        return res.status(500).json({ error: 'Gagal menganalisis URL dengan AI.' });
+        console.error("🚨 ZannScan AI Parsing Error:", error);
+        return res.status(500).json({ 
+            success: false, 
+            error: 'Gagal memproses analisis AI. Mungkin AI membalas dengan format yang salah.',
+            details: error.message
+        });
     }
-};
+});
+
+if (process.env.NODE_ENV !== "production") {
+    app.listen(PORT, () => console.log(`🚀 ZannScan AI Server berjalan di http://localhost:${PORT}`));
+}
+
+module.exports = app;
