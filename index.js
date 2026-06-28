@@ -166,17 +166,36 @@ INGAT:
     // KIRIM KE AI & PROSES JSON
     try {
         console.log(`🧠 [ZannScan] Menunggu analisis mendalam dari AI...`);
-        const aiResponseText = await analyzeWithAI(aiPrompt);
-        
-        // BULLETPROOF JSON EXTRACTOR (Mencegah Error Parsing yang memicu skor 30 terus)
-        let cleanJsonText = aiResponseText;
-        const jsonMatch = cleanJsonText.match(/\{[\s\S]*\}/);
-        
-        if (jsonMatch) {
-            cleanJsonText = jsonMatch[0]; // Ambil hanya objek JSON, abaikan teks lain
+        let aiResponseText = await analyzeWithAI(aiPrompt);
+        let jsonResult;
+
+        // 1. Cek apakah Axios sudah otomatis mem-parsing JSON menjadi Object
+        if (typeof aiResponseText === 'object' && aiResponseText !== null) {
+            // Validasi apakah object ini mengandung kerangka jawaban yang kita harapkan
+            if (aiResponseText.score !== undefined) {
+                jsonResult = aiResponseText;
+            } else {
+                // Jika terbungkus di dalam format API (misal: { response: "..." }), jadikan string lagi
+                aiResponseText = JSON.stringify(aiResponseText);
+            }
         }
 
-        const jsonResult = JSON.parse(cleanJsonText);
+        // 2. Jika masih berupa String (misal ada teks pengantar AI atau format Markdown)
+        if (!jsonResult) {
+            // Pastikan dia bertipe string sebelum memakai .match()
+            if (typeof aiResponseText !== 'string') {
+                aiResponseText = String(aiResponseText);
+            }
+            
+            // BULLETPROOF JSON EXTRACTOR
+            const jsonMatch = aiResponseText.match(/\{[\s\S]*\}/);
+            
+            if (jsonMatch) {
+                jsonResult = JSON.parse(jsonMatch[0]);
+            } else {
+                throw new Error("JSON tidak ditemukan pada teks balasan AI.");
+            }
+        }
 
         return res.status(200).json({
             success: true,
