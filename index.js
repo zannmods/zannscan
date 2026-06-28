@@ -3,67 +3,54 @@ const axios = require("axios");
 const cors = require("cors");
 const cheerio = require("cheerio");
 const path = require("path");
-const fs = require("fs"); // Tambahkan modul fs untuk membaca letak file
+const fs = require("fs");
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-// Setup agar file statis bisa diakses dari folder public atau folder utama
 app.use(express.static(path.join(__dirname, "public")));
-app.use(express.static(__dirname)); 
 
-// ===== FIX NOT FOUND: Endpoint untuk menampilkan UI Frontend =====
-app.get("/", (req, res) => {
-    const publicPath = path.join(__dirname, "public", "index.html");
-    const rootPath = path.join(__dirname, "index.html");
-    
-    // Cek apakah file index.html ada di dalam folder 'public'
-    if (fs.existsSync(publicPath)) {
-        res.sendFile(publicPath);
-    } 
-    // Jika tidak ada di folder 'public', cek apakah ada di luar (sejajar dengan index.js)
-    else if (fs.existsSync(rootPath)) {
-        res.sendFile(rootPath);
-    } 
-    // Jika masih tidak ada, beri peringatan
-    else {
-        res.status(404).send("<h2>Error 404: File index.html tidak ditemukan!</h2><p>Pastikan kamu sudah menyimpan kode frontend ke dalam file bernama <b>index.html</b>.</p>");
+// Route Utama untuk membaca index.html dengan baik di server/Vercel
+app.get('/', (req, res) => {
+    let indexPath = path.join(__dirname, "public", "index.html");
+    if (!fs.existsSync(indexPath)) {
+        indexPath = path.join(__dirname, "index.html");
     }
+    res.sendFile(indexPath);
 });
 
-// ===== SYSTEM PROMPT ZANNSCAN AI =====
-// Prompt ini dimodifikasi dari versi kamu agar fokus ke analisis HTML dan Source Code
+// ===== SYSTEM PROMPT ZANNSCAN AI (DIPERBARUI AGAR LEBIH PINTAR & BERVARIASI) =====
 const SYSTEM_PROMPT = `
 Kamu adalah ZannScan AI Enterprise Edition, AI Cybersecurity Analyst spesialis deteksi Phishing, Scam, Malware, Fraud, dan Website Berbahaya buatan ZannMods.
 
 TUGAS UTAMA:
-Kamu akan diberikan URL target, Judul Halaman, dan KUTIPAN SOURCE CODE HTML (khususnya elemen form, input, dan teks penting).
-Lakukan analisis mendalam layaknya analis keamanan senior. Pahami konteks dari source code tersebut.
+Kamu akan diberikan URL target, Judul Halaman, dan KUTIPAN SOURCE CODE HTML. Pahami konteks dari web tersebut dan berikan analisis layaknya pakar keamanan siber senior yang memiliki pemikiran analitis tajam.
 
 FAKTOR ANALISIS:
-1. DOMAIN & URL: Apakah URL mencoba meniru brand terkenal (BCA, BRI, DANA, dll) tapi menggunakan ekstensi aneh?
-2. FORM SENSITIF: Analisis tag <input> dalam HTML. Apakah meminta password, PIN, OTP, NIK, atau CVV kartu kredit di luar konteks yang wajar?
-3. SOCIAL ENGINEERING: Cari kata-kata seperti "klaim bonus", "bansos", "kuota gratis", "segera verifikasi".
-4. MALWARE / SKRIP: Apakah ada indikasi skrip tersembunyi, iframe mencurigakan, atau metode obfuscation?
+1. DOMAIN & URL: Ekstensi TLD, panjang domain, taktik penyamaran brand.
+2. FORM SENSITIF: Apakah web meminta OTP, PIN, Password, NIK secara mencurigakan?
+3. SOCIAL ENGINEERING: Deteksi manipulasi kata (bansos, dana kaget, klaim pulsa, dll).
+4. SOURCE CODE: Deteksi elemen form atau struktur yang tidak wajar.
 
-SKALA SKOR (0-100):
-0-20  : AMAN (Website normal)
-21-40 : RISIKO RENDAH (Sedikit mencurigakan tapi mungkin aman)
-41-60 : MENCURIGAKAN (Harus waspada)
-61-80 : BERBAHAYA (Indikasi kuat penipuan)
-81-100: PHISHING / SCAM (Sangat berbahaya, mencuri data)
+ATURAN SKORING & VARIASI (SANGAT PENTING):
+- SKOR HARUS SPESIFIK & DINAMIS: JANGAN PERNAH memberikan skor bulat yang berulang-ulang (seperti 20, 30, 40). Berikan angka yang spesifik dan rasional dari hasil perhitunganmu (misal: 12, 17, 26, 33, 48, 62, 79, 94).
+- 0-20  : AMAN (Website normal, berikan skor spesifik antara 1-20)
+- 21-40 : RISIKO RENDAH (Mungkin web pribadi/blog biasa tanpa form aneh)
+- 41-60 : MENCURIGAKAN (Ada indikasi aneh tapi belum pasti phising)
+- 61-80 : BERBAHAYA (Kuat dugaan penipuan)
+- 81-100: PHISHING / SCAM (Berbahaya mencuri data sensitif)
+- JANGAN menganggap domain .com atau .my.id otomatis berbahaya. Nilai dari keseluruhan konteks HTML dan Teksnya!
+- PENJELASAN (REASONS): Buatlah alasan dengan gaya bahasa yang profesional, tajam, natural, dan BERVARIASI. Jangan gunakan template kalimat yang sama terus-menerus. Buktikan bahwa kamu sedang "berpikir".
+- KESIMPULAN (CONCLUSION): Rangkum dalam kalimat yang fresh, edukatif, dan tidak kaku layaknya robot.
 
-ATURAN WAJIB:
-- JANGAN PERNAH menganggap domain .com atau .my.id otomatis berbahaya.
-- Prioritaskan BUKTI NYATA dari source code HTML yang diberikan (misal: "Ditemukan form meminta OTP").
-- KAMU WAJIB MEMBALAS HANYA DENGAN FORMAT JSON VALID. Jangan tambahkan teks apapun di luar JSON, jangan gunakan markdown \`\`\`json.
+KAMU WAJIB MEMBALAS HANYA DENGAN FORMAT JSON VALID. JANGAN GUNAKAN MARKDOWN \`\`\`json.
 
-FORMAT OUTPUT JSON YANG DIHARAPKAN:
+FORMAT OUTPUT:
 {
-  "score": 0,
-  "riskLevel": "AMAN",
+  "score": (angka spesifik 0-100),
+  "riskLevel": "AMAN / RISIKO RENDAH / MENCURIGAKAN / BERBAHAYA / PHISHING",
   "analysis": {
     "domain": "nama-domain",
     "isBrandImpersonation": false,
@@ -72,10 +59,10 @@ FORMAT OUTPUT JSON YANG DIHARAPKAN:
     "suspiciousKeywordsFound": []
   },
   "reasons": [
-    "Penjelasan 1 berdasarkan analisis HTML",
-    "Penjelasan 2 berdasarkan analisis URL"
+    "Penjelasan analitis dan unik pertama...",
+    "Penjelasan analitis dan unik kedua..."
   ],
-  "conclusion": "Kesimpulan akhir yang mudah dipahami orang awam."
+  "conclusion": "Kesimpulan akhir yang natural dan bervariasi."
 }
 `;
 
@@ -96,7 +83,7 @@ async function analyzeWithAI(promptText) {
                 { "pluginId": null, "content": promptText, "role": "user" }
             ],
             "prompt": "",  
-            "temperature": 0.3 // Temperature direndahkan agar analisis lebih logis dan konsisten
+            "temperature": 0.7 // Ditingkatkan agar AI lebih kreatif, bervariasi, dan tidak statis
         }, { 
             headers: {
                 "Accept": "/*/",
@@ -106,7 +93,7 @@ async function analyzeWithAI(promptText) {
         return response.data;
     } catch (error) {
         console.error("AI Error:", error.message);
-        throw new Error("Waduh, server ZannScan AI lagi sibuk nih bree. Coba lagi bentar ya! 🛠️");
+        throw new Error("Server ZannScan AI sedang sibuk. Coba lagi!");
     }
 }
 
@@ -131,65 +118,57 @@ app.post("/api/scan", async (req, res) => {
     let extractedHTML = "Gagal mengambil source code.";
     let visibleText = "";
 
-    // 1. PROSES SCRAPING & EKSTRAKSI SOURCE CODE
+    // PROSES SCRAPING
     try {
         const fetchRes = await axios.get(url, {
             headers: { 
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8'
             },
-            timeout: 8000 // Maksimal 8 detik nunggu webnya
+            timeout: 8000
         });
 
         const $ = cheerio.load(fetchRes.data);
-        
-        // Ambil Judul
         pageTitle = $('title').text().trim() || "Tidak ada judul";
 
-        // Ekstrak elemen-elemen penting (Form, Input, Button) untuk dianalisis AI
-        // Kita tidak mengirim seluruh HTML agar tidak kena limit token, tapi kita kirim struktur intinya
         let formHTML = "";
         $('form').each((i, el) => {
-            // Hapus atribut yang ga penting biar bersih
             $(el).find('*').removeAttr('style').removeAttr('class');
             formHTML += $.html(el) + "\n\n";
         });
 
-        // Ambil teks yang terlihat oleh user (berguna untuk deteksi social engineering)
         $('script, style, nav, footer, iframe, svg, img').remove();
         visibleText = $('body').text().replace(/\s+/g, ' ').trim().substring(0, 1500);
 
-        extractedHTML = formHTML.trim() ? formHTML.substring(0, 2000) : "Tidak ditemukan tag <form> pada halaman ini.";
+        extractedHTML = formHTML.trim() ? formHTML.substring(0, 2000) : "Tidak ditemukan form login/input pada halaman.";
 
     } catch (err) {
-        console.warn(`[Scraping Warning] Gagal fetch HTML untuk ${url}. Alasan: ${err.message}`);
-        extractedHTML = `Gagal diakses secara publik (Error: ${err.message}). Analisis hanya akan bergantung pada struktur URL dan Domain.`;
+        console.warn(`[Scraping Warning] Gagal fetch HTML. Error: ${err.message}`);
+        extractedHTML = `Gagal memuat source code web. AI hanya akan menilai berdasarkan struktur domain dan TLD. Error: ${err.message}`;
     }
 
-    // 2. SUSUN PROMPT UNTUK AI
+    // SUSUN PROMPT
     const aiPrompt = `
-Tolong analisis website berikut secara detail:
+Tolong evaluasi website ini secara kritis dan dinamis!
 
 URL TARGET: ${url}
 HOSTNAME: ${hostname}
 JUDUL HALAMAN: ${pageTitle}
 
---- TEKS TERLIHAT DI WEBSITE ---
+--- TEKS TERLIHAT ---
 ${visibleText || "Tidak ada teks yang dapat dibaca."}
 
---- SOURCE CODE HTML (Elemen Form & Input) ---
+--- SOURCE CODE (Form & Input) ---
 ${extractedHTML}
 
-Lakukan analisis berdasarkan data di atas. Apakah ada form yang meminta data sensitif? Apakah ada indikasi penipuan dari teksnya?
-Ingat, balas HANYA dengan JSON valid!
+Berikan skor analisis keamanan yang sangat spesifik (hindari skor puluhan pas seperti 20, 30) serta alasan yang unik dan tidak kaku! Ingat, HANYA balas JSON!
 `;
 
-    // 3. KIRIM KE AI DAN PARSING HASILNYA
+    // KIRIM KE AI
     try {
-        console.log(`🧠 [ZannScan] Menganalisis data dengan AI...`);
+        console.log(`🧠 [ZannScan] AI sedang berpikir...`);
         const aiResponseText = await analyzeWithAI(aiPrompt);
         
-        // Membersihkan jika AI masih ngeyel ngasih markdown ```json
         let cleanJsonText = aiResponseText;
         if (cleanJsonText.startsWith("```")) {
             cleanJsonText = cleanJsonText.replace(/^```(json)?|```$/gi, '').trim();
@@ -206,8 +185,7 @@ Ingat, balas HANYA dengan JSON valid!
         console.error("🚨 ZannScan AI Parsing Error:", error);
         return res.status(500).json({ 
             success: false, 
-            error: 'Gagal memproses analisis AI. Mungkin AI membalas dengan format yang salah.',
-            details: error.message
+            error: 'Gagal memproses hasil AI.',
         });
     }
 });
