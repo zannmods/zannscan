@@ -1,110 +1,52 @@
-
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id" class="scroll-smooth antialiased">
 <head>
-     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>ZannScan | Cek Web Phishing & Penipuan dengan AI</title>
-    <meta name="title" content="ZannScan | Cek Web Phishing & Penipuan dengan AI">
-    <meta name="description" content="ZannScan adalah tool AI canggih buatan Ahmad Fauzan (ZannMods) untuk mendeteksi link phishing, web penipuan, dan menganalisis keamanan URL secara real-time.">
-    <meta name="keywords" content="zannscan, zannscan.my.id, cek web phishing, deteksi web penipuan, ai keamanan siber, ahmad fauzan, zannmods, anti phishing indonesia, scanner url aman, deteksi scam">
-    <meta name="author" content="Ahmad Fauzan (ZannMods)">
-    <meta name="robots" content="index, follow, max-image-preview:large">
-    <meta name="language" content="Indonesian">
-    <meta name="revisit-after" content="1 days">
-    <meta name="theme-color" content="#0f172a">
-
-    <link rel="canonical" href="https://zannscan.my.id/">
-
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://zannscan.my.id/">
-    <meta property="og:title" content="ZannScan | Deteksi Web Phishing dengan AI">
-    <meta property="og:description" content="Jangan sampai kena tipu! Gunakan ZannScan untuk mengecek keamanan link, domain, dan indikasi web penipuan dalam hitungan detik. Developed by ZannMods.">
-    <meta property="og:image" content="https://zannscan.my.id/assets/og-image.png"> 
-
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://zannscan.my.id/">
-    <meta property="twitter:title" content="ZannScan | Pengecek URL & Anti Phishing AI">
-    <meta property="twitter:description" content="Cek link mencurigakan pakai AI ZannScan sekarang. Cepat, aman, dan akurat. Karya Ahmad Fauzan (ZannMods).">
-    <meta property="twitter:image" content="https://zannscan.my.id/assets/og-image.png">
-
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@graph": [
-        {
-          "@type": "WebSite",
-          "@id": "https://zannscan.my.id/#website",
-          "url": "https://zannscan.my.id/",
-          "name": "ZannScan",
-          "description": "AI URL Scanner untuk mendeteksi web phishing dan penipuan di Indonesia.",
-          "publisher": {
-            "@id": "https://zannscan.my.id/#person"
-          },
-          "inLanguage": "id-ID"
-        },
-        {
-          "@type": "Person",
-          "@id": "https://zannscan.my.id/#person",
-          "name": "Ahmad Fauzan",
-          "alternateName": "ZannMods",
-          "jobTitle": "Full-Stack Developer",
-          "url": "https://zannscan.my.id/"
-        },
-        {
-          "@type": "SoftwareApplication",
-          "name": "ZannScan AI",
-          "operatingSystem": "All",
-          "applicationCategory": "SecurityApplication",
-          "offers": {
-            "@type": "Offer",
-            "price": "0",
-            "priceCurrency": "IDR"
-          },
-          "creator": {
-            "@id": "https://zannscan.my.id/#person"
-          }
-        }
-      ]
-    }
-    </script>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>ZannScan | AI Security</title>
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: {
+                        sans: ['-apple-system', 'BlinkMacSystemFont', '"SF Pro Display"', '"Segoe UI"', 'Roboto', 'Helvetica', 'Arial', 'sans-serif'],
+                        mono: ['"SF Mono"', 'Menlo', 'Monaco', 'Courier New', 'monospace'],
+                    },
                     colors: {
-                        dark: '#0f172a',
-                        darker: '#020617',
-                        primary: '#3b82f6',
-                        secondary: '#8b5cf6',
-                        danger: '#ef4444',
-                        success: '#10b981',
-                        warning: '#f59e0b',
-                        surface: 'rgba(30, 41, 59, 0.7)',
+                        ios: {
+                            page: '#000000',
+                            card: '#1c1c1e',
+                            cardHover: '#2c2c2e',
+                            blue: '#0a84ff',
+                            indigo: '#5e5ce6',
+                            green: '#30d158',
+                            red: '#ff453a',
+                            orange: '#ff9f0a',
+                            gray: '#8e8e93',
+                            grayLight: '#aeaeb2',
+                            separator: 'rgba(84,84,88,0.3)',
+                            glass: 'rgba(28, 28, 30, 0.75)'
+                        }
                     },
                     animation: {
-                        'spin-slow': 'spin 3s linear infinite',
-                        'spin-reverse': 'spin-reverse 2s linear infinite',
-                        'pulse-glow': 'pulse-glow 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'fade-in-up': 'fadeInUp 0.6s ease-out forwards',
+                        'spring-up': 'springUp 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.15) forwards',
+                        'fade-in': 'fadeIn 0.4s ease-out forwards',
+                        'spin-slow': 'spin 2.5s linear infinite',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                     },
                     keyframes: {
-                        'spin-reverse': {
-                            '0%': { transform: 'rotate(360deg)' },
-                            '100%': { transform: 'rotate(0deg)' },
+                        springUp: {
+                            '0%': { transform: 'translateY(30px) scale(0.95)', opacity: '0' },
+                            '100%': { transform: 'translateY(0) scale(1)', opacity: '1' }
                         },
-                        'pulse-glow': {
-                            '0%, 100%': { opacity: 1, boxShadow: '0 0 20px rgba(59, 130, 246, 0.5)' },
-                            '50%': { opacity: 0.7, boxShadow: '0 0 40px rgba(139, 92, 246, 0.8)' },
-                        },
-                        'fadeInUp': {
-                            '0%': { opacity: 0, transform: 'translateY(20px)' },
-                            '100%': { opacity: 1, transform: 'translateY(0)' },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
                         }
                     }
                 }
@@ -112,344 +54,329 @@
         }
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            background-color: #0a0a0a;
+            color: #ffffff;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            font-family: 'Inter', -apple-system, sans-serif;
+            display: flex;
+            justify-content: center;
+        }
 
-        body { 
-            font-family: 'Plus Jakarta Sans', sans-serif; 
-            background-color: #020617; 
-            color: #f8fafc; 
-            overflow-x: hidden; 
+        #app-container {
+            width: 100%;
+            max-width: 430px;
+            min-height: 100vh;
+            background-color: #000000;
+            position: relative;
+            overflow-x: hidden;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            border-left: 1px solid rgba(255,255,255,0.05);
+            border-right: 1px solid rgba(255,255,255,0.05);
         }
-        .font-mono { font-family: 'JetBrains Mono', monospace; }
-        
-        .glass-panel {
-            background: rgba(15, 23, 42, 0.6);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+
+        .floating-nav {
+            background: rgba(28, 28, 30, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 0.5px solid rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+
+        .glass-widget {
+            background: rgba(28, 28, 30, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 0.5px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .ios-input-container {
+            background: rgba(118, 118, 128, 0.24);
+            transition: background 0.3s ease;
         }
         
-        .gradient-text {
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+        .ios-input-container:focus-within {
+            background: rgba(118, 118, 128, 0.35);
+        }
+
+        .ios-input {
+            background: transparent;
+            border: none;
+            color: #ffffff;
+        }
+        
+        .ios-input:focus {
+            outline: none;
+        }
+
+        .text-gradient {
+            background: linear-gradient(135deg, #0a84ff, #5e5ce6);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-size: 200% auto;
-            animation: shine 3s linear infinite;
         }
 
-        @keyframes shine {
-            to { background-position: 200% center; }
+        .nav-item {
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .nav-item.active {
+            color: #ffffff;
         }
 
-        /* Radar Animation CSS */
-        .radar-container {
-            position: relative;
-            width: 140px;
-            height: 140px;
+        .nav-item.active .icon-wrapper {
+            background: rgba(255, 255, 255, 0.15);
         }
-        .radar-core {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            border: 2px solid rgba(59, 130, 246, 0.2);
-            background: radial-gradient(circle, rgba(59,130,246,0.1) 0%, rgba(2,6,23,0) 70%);
+        
+        .nav-item:active {
+            transform: scale(0.9);
         }
-        .radar-sweep {
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            background: conic-gradient(from 0deg, transparent 70%, rgba(59, 130, 246, 0.8) 100%);
-            animation: spin 2s linear infinite;
+
+        .icon-wrapper {
+            transition: background 0.3s ease;
         }
-        .radar-ring-1 {
-            position: absolute;
-            inset: 10px;
-            border-radius: 50%;
-            border: 1px dashed rgba(139, 92, 246, 0.4);
-            animation: spin-reverse 8s linear infinite;
+
+        .btn-ios {
+            background: linear-gradient(180deg, #2a9df4 0%, #0a84ff 100%);
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.2), 0 4px 15px rgba(10, 132, 255, 0.3);
+            transition: transform 0.1s ease, filter 0.1s ease;
         }
-        .radar-ring-2 {
-            position: absolute;
-            inset: 25px;
+
+        .btn-ios:active {
+            transform: scale(0.96);
+            filter: brightness(0.8);
+        }
+
+        .radar-spinner {
+            width: 70px;
+            height: 70px;
             border-radius: 50%;
-            border: 2px solid transparent;
-            border-top-color: #3b82f6;
-            border-bottom-color: #8b5cf6;
-            animation: spin 3s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
+            border: 2.5px solid rgba(10, 132, 255, 0.15);
+            border-top-color: #0a84ff;
+            animation: spin 1s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite;
         }
 
         .hide { display: none !important; }
         
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #475569; }
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; -webkit-tap-highlight-color: transparent; }
     </style>
 </head>
-<body class="min-h-screen flex flex-col relative selection:bg-primary selection:text-white">
+<body>
 
-    <!-- Ambient Background -->
-    <div class="fixed inset-0 w-full h-full overflow-hidden -z-10 pointer-events-none">
-        <div class="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-600/20 rounded-full blur-[150px] mix-blend-screen"></div>
-        <div class="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-600/20 rounded-full blur-[150px] mix-blend-screen"></div>
-        <div class="absolute top-[40%] left-[50%] translate-x-[-50%] w-[30%] h-[30%] bg-pink-600/10 rounded-full blur-[100px] mix-blend-screen"></div>
-    </div>
+    <div id="app-container" class="flex flex-col pb-28">
 
-    <!-- Navbar -->
-    <nav class="w-full glass-panel fixed top-0 z-50 transition-all duration-300" id="navbar">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-20">
-                <div class="flex items-center gap-3 cursor-pointer group" onclick="showPage('home')">
-                    <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-primary to-secondary flex items-center justify-center shadow-lg shadow-primary/30 group-hover:scale-110 transition-transform">
-                        <i class="fa-solid fa-shield-halved text-white text-xl"></i>
-                    </div>
-                    <span class="font-extrabold text-2xl tracking-tight text-white">Zann<span class="gradient-text">Scan</span></span>
-                </div>
-                <div class="flex space-x-2 sm:space-x-4">
-                    <button onclick="showPage('home')" class="text-gray-300 hover:text-white hover:bg-white/5 px-4 py-2 rounded-lg text-sm font-medium transition-all">Beranda</button>
-                    <button onclick="showPage('privacy')" class="text-gray-300 hover:text-white hover:bg-white/5 px-4 py-2 rounded-lg text-sm font-medium transition-all">Privacy</button>
-                </div>
+        <div class="absolute top-[-100px] left-[-100px] w-64 h-64 bg-ios-blue/10 rounded-full blur-[80px] pointer-events-none"></div>
+        <div class="absolute top-[30%] right-[-100px] w-64 h-64 bg-ios-indigo/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+        <header class="w-full pt-14 pb-2 px-6 sticky top-0 z-40 bg-ios-page/80 backdrop-blur-xl border-b border-white/5">
+            <div class="flex items-center justify-center gap-1.5">
+                <i class="ph-fill ph-shield-check text-ios-blue text-2xl"></i>
+                <h1 class="text-xl font-bold tracking-tight">Zann<span class="text-ios-blue">Scan</span></h1>
             </div>
-        </div>
-    </nav>
+        </header>
 
-    <!-- Main Content: HOME -->
-    <main id="home-page" class="flex-grow flex flex-col items-center justify-center pt-32 px-4 sm:px-6 lg:px-8 w-full max-w-5xl mx-auto z-10 transition-opacity duration-500">
-        
-        <!-- Hero Section -->
-        <div class="text-center mb-12 w-full animate-fade-in-up" id="hero-section">
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel mb-6 border-primary/30 text-primary text-xs font-semibold uppercase tracking-wider">
-                <span class="relative flex h-2 w-2">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-                </span>
-                Powered by ZannAI Engine
-            </div>
-            <h1 class="text-4xl sm:text-5xl md:text-7xl font-extrabold mb-6 leading-tight drop-shadow-2xl text-white">
-                Analisis <span class="gradient-text">Web Phishing</span><br/>Tingkat Lanjut.
-            </h1>
-            <p class="text-slate-400 text-base sm:text-lg max-w-2xl mx-auto font-medium">
-                Deteksi ancaman siber, penipuan, dan phising dalam hitungan detik. Algoritma AI kami menganalisis struktur domain, TLD, dan pola manipulasi.
-            </p>
-        </div>
-
-        <!-- Search Box -->
-        <div class="w-full max-w-3xl relative group animate-fade-in-up" style="animation-delay: 0.1s;" id="search-section">
-            <div class="absolute -inset-1 bg-gradient-to-r from-primary via-secondary to-pink-500 rounded-2xl blur-lg opacity-30 group-hover:opacity-60 transition duration-500"></div>
-            <div class="relative flex items-center w-full bg-slate-900/90 rounded-2xl p-2 shadow-2xl border border-slate-700/50 backdrop-blur-xl">
-                <i class="fa-solid fa-magnifying-glass text-slate-400 ml-5 text-xl"></i>
-                <input type="text" id="url-input" placeholder="Tempel URL mencurigakan di sini..." 
-                    class="w-full bg-transparent border-none focus:ring-0 text-white px-5 py-4 text-lg outline-none placeholder-slate-500 font-medium"
-                    onkeydown="if(event.key === 'Enter') startScan()">
-                <button onclick="startScan()" id="scan-btn" class="bg-gradient-to-r from-primary to-secondary hover:from-blue-500 hover:to-purple-500 text-white font-bold py-4 px-8 rounded-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-primary/25 flex items-center gap-3">
-                    <span class="hidden sm:inline">Pindai Sekarang</span>
-                    <span class="sm:hidden">Scan</span>
-                    <i class="fa-solid fa-radar fa-spin-pulse"></i>
-                </button>
-            </div>
-        </div>
-
-        <!-- ================= LOADING STATE (FUTURISTIC RADAR) ================= -->
-        <div id="loading-state" class="mt-8 flex flex-col items-center justify-center hide w-full py-10">
-            <!-- Radar Visual -->
-            <div class="radar-container mb-10">
-                <div class="radar-core"></div>
-                <div class="radar-sweep"></div>
-                <div class="radar-ring-1"></div>
-                <div class="radar-ring-2"></div>
-                <!-- Center Icon -->
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <div class="w-12 h-12 bg-slate-900 rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(59,130,246,0.5)] border border-primary/50">
-                        <i class="fa-solid fa-robot text-primary text-xl animate-pulse"></i>
-                    </div>
-                </div>
+        <main id="home-page" class="flex-grow w-full px-5 pt-8 flex flex-col items-center">
+            
+            <div id="hero-section" class="w-full text-center mb-8 opacity-0 animate-spring-up">
+                <h2 class="text-4xl font-extrabold mb-3 leading-tight tracking-tight">
+                    Scan Web.<br><span class="text-gradient">Tetap Aman.</span>
+                </h2>
+                <p class="text-ios-grayLight text-sm font-medium px-4">
+                    Kecerdasan Buatan untuk mendeteksi ancaman, malware, dan situs web phishing.
+                </p>
             </div>
 
-            <!-- Progress HUD -->
-            <div class="w-full max-w-md glass-panel rounded-2xl p-6 text-center border-t-2 border-t-primary/50 shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-                <div class="flex items-center justify-between mb-4">
-                    <span class="text-xs font-mono text-primary font-bold tracking-widest">SYSTEM_STATUS</span>
-                    <span class="text-xs font-mono text-secondary animate-pulse" id="progress-percentage">0%</span>
-                </div>
-                
-                <h3 id="loading-text" class="text-white font-mono text-sm sm:text-base font-medium h-6 mb-5 transition-all duration-300">Menghubungkan ke ZannAI Engine...</h3>
-                
-                <!-- Progress Bar Container -->
-                <div class="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
-                    <div id="loading-bar" class="h-full bg-gradient-to-r from-primary via-secondary to-primary bg-[length:200%_100%] animate-[shine_2s_linear_infinite] w-0 transition-all duration-300 ease-out"></div>
-                </div>
-
-                <div class="mt-4 flex justify-center gap-2 opacity-50">
-                    <div class="w-1.5 h-1.5 bg-primary rounded-full animate-bounce" style="animation-delay: 0s"></div>
-                    <div class="w-1.5 h-1.5 bg-secondary rounded-full animate-bounce" style="animation-delay: 0.2s"></div>
-                    <div class="w-1.5 h-1.5 bg-pink-500 rounded-full animate-bounce" style="animation-delay: 0.4s"></div>
-                </div>
-            </div>
-        </div>
-        <!-- ==================================================================== -->
-
-        <!-- Results Section -->
-        <div id="results-section" class="w-full max-w-4xl mt-12 hide opacity-0 pb-20">
-            <div class="glass-panel rounded-[2rem] p-6 sm:p-10 shadow-2xl relative overflow-hidden animate-fade-in-up">
-                
-                <!-- Decorator background for card -->
-                <div class="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-white/5 to-transparent rounded-bl-full pointer-events-none"></div>
-
-                <!-- Top Status Banner -->
-                <div id="status-banner" class="rounded-3xl p-6 sm:p-8 mb-8 flex flex-col sm:flex-row items-center justify-between gap-6 border-2 relative overflow-hidden transition-all duration-500">
-                    <!-- Dynamic Glow behind banner -->
-                    <div id="status-glow" class="absolute inset-0 opacity-20 blur-2xl"></div>
-
-                    <div class="flex items-center gap-5 relative z-10 w-full sm:w-auto">
-                        <div id="status-icon" class="w-20 h-20 shrink-0 rounded-2xl flex items-center justify-center text-4xl shadow-xl transition-colors">
-                            <i class="fa-solid fa-shield-check"></i>
-                        </div>
-                        <div class="flex-grow overflow-hidden">
-                            <h2 id="status-title" class="text-2xl sm:text-3xl font-extrabold mb-1">Domain Aman</h2>
-                            <p id="scanned-url" class="text-slate-400 font-mono text-sm truncate max-w-[200px] sm:max-w-[300px] md:max-w-md">https://example.com</p>
-                        </div>
+            <div id="search-section" class="w-full opacity-0 animate-spring-up" style="animation-delay: 0.1s;">
+                <div class="glass-widget rounded-[2rem] p-5 w-full">
+                    <div class="ios-input-container w-full rounded-2xl flex items-center px-4 py-1 mb-4">
+                        <i class="ph ph-magnifying-glass text-ios-gray text-xl"></i>
+                        <input type="url" id="url-input" placeholder="Tempel URL di sini..." 
+                            class="ios-input w-full py-3.5 px-3 text-[17px] font-medium"
+                            inputmode="url" onkeydown="if(event.key === 'Enter') startScan()">
                     </div>
-                    
-                    <div class="relative z-10 flex flex-col items-center bg-black/20 rounded-2xl p-4 min-w-[140px] border border-white/5 backdrop-blur-md">
-                        <p class="text-xs text-slate-400 mb-1 uppercase tracking-widest font-bold">Skor Risiko</p>
-                        <div class="flex items-baseline gap-1">
-                            <span class="text-5xl font-black tabular-nums tracking-tighter" id="risk-score-value">10</span>
-                            <span class="text-lg text-slate-500 font-bold">/100</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- AI Analysis Grid -->
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8 relative z-10">
-                    
-                    <!-- Domain Details -->
-                    <div class="bg-slate-900/60 rounded-2xl p-6 border border-slate-700/50 hover:border-slate-600/80 transition-colors">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="w-10 h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 border border-blue-500/30">
-                                <i class="fa-solid fa-server text-lg"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-white">Data Teknis</h3>
-                        </div>
-                        <ul class="space-y-4 text-sm" id="domain-details-list">
-                            <!-- Injected by JS -->
-                        </ul>
-                    </div>
-
-                    <!-- AI Findings -->
-                    <div class="bg-slate-900/60 rounded-2xl p-6 border border-slate-700/50 hover:border-slate-600/80 transition-colors">
-                        <div class="flex items-center gap-3 mb-6">
-                            <div class="w-10 h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 border border-purple-500/30">
-                                <i class="fa-solid fa-brain text-lg"></i>
-                            </div>
-                            <h3 class="text-lg font-bold text-white">Temuan ZannAI</h3>
-                        </div>
-                        <ul class="space-y-4 text-sm" id="ai-reasons-list">
-                            <!-- Injected by JS -->
-                        </ul>
-                    </div>
-                </div>
-
-                <!-- AI Conclusion Box -->
-                <div class="bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl p-6 border-l-4 border-primary relative overflow-hidden">
-                    <div class="absolute right-0 top-0 text-9xl opacity-[0.03] pointer-events-none -mt-4 -mr-4">
-                        <i class="fa-solid fa-quote-right"></i>
-                    </div>
-                    <h3 class="text-sm font-bold text-slate-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-sparkles text-primary"></i> Kesimpulan AI
-                    </h3>
-                    <p id="ai-conclusion" class="text-slate-200 leading-relaxed text-sm md:text-base font-medium relative z-10">
-                        <!-- Injected by JS -->
-                    </p>
-                </div>
-                
-                <!-- Action Buttons -->
-                <div class="mt-8 flex justify-center w-full">
-                     <button onclick="resetScan()" class="text-slate-400 hover:text-white font-medium py-2 px-6 rounded-lg transition-colors flex items-center gap-2 hover:bg-slate-800">
-                        <i class="fa-solid fa-rotate-left"></i> Scan URL Lain
+                    <button onclick="startScan()" class="btn-ios w-full rounded-2xl py-3.5 text-white font-bold text-[17px] flex items-center justify-center gap-2 tracking-wide">
+                        <i class="ph-bold ph-radar text-xl"></i> Pindai URL
                     </button>
                 </div>
             </div>
-        </div>
-    </main>
 
-    <!-- Main Content: PRIVACY POLICY (Kept same layout as before, polished styling) -->
-    <main id="privacy-page" class="flex-grow flex flex-col pt-32 px-4 sm:px-6 lg:px-8 w-full max-w-4xl mx-auto z-10 hide opacity-0 transition-opacity duration-300 pb-20">
-        <div class="glass-panel rounded-3xl p-8 sm:p-12 shadow-2xl relative overflow-hidden animate-fade-in-up">
-            <h1 class="text-4xl sm:text-5xl font-extrabold mb-4 gradient-text">Privacy Policy</h1>
-            <p class="text-slate-400 mb-10 font-mono text-sm border-b border-slate-700 pb-6">Update Terakhir: 16 Juni 2026</p>
-            
-            <div class="space-y-8 text-slate-300 leading-relaxed">
-                <section>
-                    <h2 class="text-xl font-bold text-white mb-3 flex items-center gap-2"><i class="fa-solid fa-shield-halved text-primary"></i> 1. Pengumpulan Data</h2>
-                    <p>ZannScan dirancang dengan privasi sebagai prioritas utama. Kami hanya memproses URL yang Anda masukkan ke dalam kolom pemindaian untuk dianalisis oleh sistem Kecerdasan Buatan (AI). Kami <strong>tidak</strong> meminta, mengumpulkan, atau menyimpan data pribadi identitas Anda.</p>
-                </section>
+            <div id="loading-state" class="w-full flex flex-col items-center justify-center py-20 hide">
+                <div class="relative w-20 h-20 flex items-center justify-center mb-6">
+                    <div class="radar-spinner absolute inset-0"></div>
+                    <i class="ph-fill ph-cpu text-ios-blue text-3xl animate-pulse"></i>
+                </div>
+                <div class="glass-widget rounded-2xl p-5 w-full text-center">
+                    <p id="loading-text" class="text-white font-medium text-sm transition-opacity duration-300">Menghubungkan ke ZannAI...</p>
+                    <div class="w-full h-1.5 bg-ios-separator rounded-full mt-4 overflow-hidden">
+                        <div id="loading-bar" class="h-full bg-ios-blue w-0 transition-all duration-300 rounded-full"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="results-section" class="w-full hide opacity-0 transition-opacity duration-500">
                 
-                <section>
-                    <h2 class="text-xl font-bold text-white mb-3 flex items-center gap-2"><i class="fa-solid fa-microchip text-primary"></i> 2. Penggunaan Data & AI</h2>
-                    <p>URL yang dikirimkan hanya digunakan secara *real-time* untuk:</p>
-                    <ul class="list-disc pl-6 mt-3 space-y-2 text-slate-400 marker:text-primary">
-                        <li>Mengekstraksi informasi domain, TLD, dan struktur path.</li>
-                        <li>Menganalisis indikasi penipuan (phishing).</li>
-                        <li>URL tidak disimpan dalam database permanen setelah sesi selesai.</li>
-                    </ul>
-                </section>
+                <div id="status-card" class="glass-widget rounded-[2rem] p-6 mb-5 relative overflow-hidden flex flex-col items-center text-center">
+                    <div id="status-glow" class="absolute inset-0 opacity-20 blur-3xl rounded-full scale-150"></div>
+                    
+                    <div id="status-icon-container" class="w-16 h-16 rounded-full flex items-center justify-center text-3xl mb-3 relative z-10 backdrop-blur-md border border-white/20">
+                        <i id="status-icon" class="ph-fill ph-shield-check"></i>
+                    </div>
+                    
+                    <h2 id="status-title" class="text-2xl font-bold mb-1 relative z-10">Aman</h2>
+                    <p id="scanned-url" class="text-ios-gray font-mono text-[13px] mb-5 truncate w-full px-2 relative z-10">https://example.com</p>
+                    
+                    <div class="w-full bg-black/40 rounded-2xl p-4 border border-white/5 relative z-10 flex justify-between items-center">
+                        <span class="text-ios-grayLight font-medium text-sm">Skor Risiko AI</span>
+                        <div class="flex items-baseline gap-1">
+                            <span id="risk-score-value" class="text-3xl font-black tabular-nums tracking-tighter">0</span>
+                            <span class="text-ios-gray font-medium text-sm">/100</span>
+                        </div>
+                    </div>
+                </div>
 
-                <section>
-                    <h2 class="text-xl font-bold text-white mb-3 flex items-center gap-2"><i class="fa-solid fa-triangle-exclamation text-primary"></i> 3. Disclaimer</h2>
-                    <p>Meskipun menggunakan AI canggih, <strong>tidak ada sistem yang 100% sempurna</strong>. Hasil scan adalah rekomendasi. Kami tidak bertanggung jawab atas kerugian finansial yang terjadi. Selalu waspada.</p>
-                </section>
-            </div>
-        </div>
-    </main>
+                <div class="w-full mb-5">
+                    <h3 class="text-[12px] font-bold text-ios-gray uppercase tracking-wider mb-2 px-4">Data Teknis</h3>
+                    <div class="glass-widget rounded-[1.5rem] overflow-hidden">
+                        <ul id="domain-details-list" class="divide-y divide-ios-separator">
+                        </ul>
+                    </div>
+                </div>
 
-    <!-- Footer -->
-    <footer class="w-full glass-panel border-t border-slate-800/50 mt-auto z-10">
-        <div class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <div class="flex items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
-                <i class="fa-solid fa-shield-halved text-primary"></i>
-                <span class="font-bold text-white tracking-wide">ZannScan AI</span>
+                <div class="w-full mb-6">
+                    <h3 class="text-[12px] font-bold text-ios-gray uppercase tracking-wider mb-2 px-4">Analisis AI</h3>
+                    <div class="glass-widget rounded-[1.5rem] overflow-hidden p-5">
+                        <ul id="ai-reasons-list" class="space-y-4">
+                        </ul>
+                        <div class="mt-5 pt-4 border-t border-ios-separator">
+                            <p id="ai-conclusion" class="text-white text-sm font-medium leading-relaxed"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="resetScan()" class="w-full py-3.5 rounded-2xl bg-ios-card hover:bg-ios-cardHover border border-white/10 text-ios-blue font-semibold text-[17px] transition-colors flex items-center justify-center gap-2 mb-4">
+                    <i class="ph-bold ph-arrow-counter-clockwise text-xl"></i> Pindai Ulang
+                </button>
             </div>
-            <p class="text-slate-500 text-sm text-center font-medium">
-                &copy; 2026 Developed by <span class="text-slate-300">Ahmad Fauzan (ZannMods)</span>
-            </p>
-            <div class="flex space-x-5 text-slate-500">
-                <a href="https://github.com/zannmods" class="hover:text-white transition-colors transform hover:scale-110"><i class="fa-brands fa-github text-xl"></i></a>
-                <a href="#" class="hover:text-primary transition-colors transform hover:scale-110"><i class="fa-brands fa-whatsapp text-xl"></i></a>
+        </main>
+
+        <main id="privacy-page" class="flex-grow w-full px-5 pt-8 hide opacity-0 transition-opacity duration-300">
+            <h1 class="text-3xl font-bold mb-1 px-2">Privasi</h1>
+            <p class="text-ios-gray text-sm mb-6 px-2">ZannScan Enterprise Edition</p>
+            
+            <div class="glass-widget rounded-[1.5rem] overflow-hidden">
+                <div class="p-5 border-b border-ios-separator">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 rounded-full bg-ios-blue/20 flex items-center justify-center">
+                            <i class="ph-fill ph-lock-key text-ios-blue"></i>
+                        </div>
+                        <h3 class="text-white font-semibold text-[16px]">Data Terlindungi</h3>
+                    </div>
+                    <p class="text-sm text-ios-grayLight leading-relaxed pl-11">
+                        URL diproses secara instan dan tidak disimpan dalam riwayat publik. Tidak ada identitas pribadi yang dikumpulkan.
+                    </p>
+                </div>
+                <div class="p-5 border-b border-ios-separator">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 rounded-full bg-ios-indigo/20 flex items-center justify-center">
+                            <i class="ph-fill ph-brain text-ios-indigo"></i>
+                        </div>
+                        <h3 class="text-white font-semibold text-[16px]">Analisis Mesin</h3>
+                    </div>
+                    <p class="text-sm text-ios-grayLight leading-relaxed pl-11">
+                        AI membaca pola *source code* secara *real-time* untuk mengidentifikasi injeksi ancaman dan penipuan.
+                    </p>
+                </div>
+                <div class="p-5">
+                    <div class="flex items-center gap-3 mb-2">
+                        <div class="w-8 h-8 rounded-full bg-ios-orange/20 flex items-center justify-center">
+                            <i class="ph-fill ph-warning-circle text-ios-orange"></i>
+                        </div>
+                        <h3 class="text-white font-semibold text-[16px]">Rekomendasi</h3>
+                    </div>
+                    <p class="text-sm text-ios-grayLight leading-relaxed pl-11">
+                        Hasil pemindaian adalah probabilitas mesin. Tetap gunakan kehati-hatian sebelum memasukkan kredensial login Anda.
+                    </p>
+                </div>
             </div>
+        </main>
+
+        <div class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 w-full px-5 max-w-[430px]">
+            <nav class="floating-nav w-full rounded-full px-2 py-2 flex items-center justify-evenly">
+                <button onclick="switchTab('home')" id="tab-home" class="nav-item active flex items-center justify-center gap-2 py-2.5 px-6 rounded-full text-white">
+                    <div class="icon-wrapper w-9 h-9 rounded-full bg-white/15 flex items-center justify-center">
+                        <i id="icon-home" class="ph-fill ph-radar text-xl"></i>
+                    </div>
+                    <span class="text-[13px] font-semibold tracking-wide">Pindai</span>
+                </button>
+                <button onclick="switchTab('privacy')" id="tab-privacy" class="nav-item flex items-center justify-center gap-2 py-2.5 px-6 rounded-full text-ios-gray">
+                    <div class="icon-wrapper w-9 h-9 rounded-full bg-transparent flex items-center justify-center">
+                        <i id="icon-privacy" class="ph ph-shield-check text-xl"></i>
+                    </div>
+                    <span class="text-[13px] font-semibold tracking-wide">Privasi</span>
+                </button>
+            </nav>
         </div>
-    </footer>
+
+    </div>
 
     <script>
-        // --- Navigation Logic ---
-        function showPage(pageId) {
+        function switchTab(tab) {
             const home = document.getElementById('home-page');
             const privacy = document.getElementById('privacy-page');
-            
-            if (pageId === 'home') {
+            const tabHome = document.getElementById('tab-home');
+            const tabPrivacy = document.getElementById('tab-privacy');
+            const iconHome = document.getElementById('icon-home');
+            const iconPrivacy = document.getElementById('icon-privacy');
+
+            if (tab === 'home') {
                 privacy.classList.add('hide');
                 privacy.classList.remove('opacity-100');
                 home.classList.remove('hide');
-                setTimeout(() => home.classList.add('opacity-100'), 50);
+                setTimeout(() => home.classList.add('opacity-100'), 10);
+                
+                tabHome.classList.add('active', 'text-white');
+                tabHome.classList.remove('text-ios-gray');
+                tabPrivacy.classList.remove('active', 'text-white');
+                tabPrivacy.classList.add('text-ios-gray');
+
+                tabHome.querySelector('.icon-wrapper').classList.add('bg-white/15');
+                tabHome.querySelector('.icon-wrapper').classList.remove('bg-transparent');
+                tabPrivacy.querySelector('.icon-wrapper').classList.remove('bg-white/15');
+                tabPrivacy.querySelector('.icon-wrapper').classList.add('bg-transparent');
+
+                iconHome.className = 'ph-fill ph-radar text-xl';
+                iconPrivacy.className = 'ph ph-shield-check text-xl';
             } else {
                 home.classList.add('hide');
                 home.classList.remove('opacity-100');
                 privacy.classList.remove('hide');
-                setTimeout(() => privacy.classList.add('opacity-100'), 50);
+                setTimeout(() => privacy.classList.add('opacity-100'), 10);
+                
+                tabPrivacy.classList.add('active', 'text-white');
+                tabPrivacy.classList.remove('text-ios-gray');
+                tabHome.classList.remove('active', 'text-white');
+                tabHome.classList.add('text-ios-gray');
+
+                tabPrivacy.querySelector('.icon-wrapper').classList.add('bg-white/15');
+                tabPrivacy.querySelector('.icon-wrapper').classList.remove('bg-transparent');
+                tabHome.querySelector('.icon-wrapper').classList.remove('bg-white/15');
+                tabHome.querySelector('.icon-wrapper').classList.add('bg-transparent');
+
+                iconPrivacy.className = 'ph-fill ph-shield-check text-xl';
+                iconHome.className = 'ph ph-radar text-xl';
             }
-            window.scrollTo(0,0);
+            document.getElementById('app-container').scrollTo({top: 0, behavior: 'smooth'});
         }
 
-        // --- Animated Loading Sequence Logic ---
         const loadingSteps = [
-            "Menghubungkan ke ZannAI Engine...",
-            "Mengekstrak Domain & Path URL...",
-            "Memverifikasi ekstensi TLD & SSL...",
-            "Mencocokkan dengan Database Whitelist...",
-            "Mendeteksi pola kata manipulatif (Phishing)...",
-            "Algoritma AI sedang mengkalkulasi Skor Risiko...",
-            "Menyusun laporan akhir..."
+            "Menghubungkan ke server ZannAI...",
+            "Mengekstrak DOM & Source Code...",
+            "Menganalisis SSL & TLD...",
+            "Mendeteksi Form Sensitif...",
+            "Memproses skor keamanan akhir..."
         ];
 
         let scanInterval;
@@ -457,39 +384,30 @@
         function startLoadingAnimation() {
             const loadingText = document.getElementById('loading-text');
             const loadingBar = document.getElementById('loading-bar');
-            const percentageText = document.getElementById('progress-percentage');
-            
-            let step = 0;
             let progress = 0;
 
-            // Animate progress bar and text
             scanInterval = setInterval(() => {
-                progress += Math.random() * 15; // Random increment
-                if (progress >= 100) progress = 99; // Cap at 99% until real result arrives
-
+                progress += Math.random() * 20;
+                if (progress >= 95) progress = 95;
                 loadingBar.style.width = `${progress}%`;
-                percentageText.innerText = `${Math.floor(progress)}%`;
-
-                // Update text based on progress
-                let currentStepIndex = Math.floor((progress / 100) * loadingSteps.length);
-                if (currentStepIndex >= loadingSteps.length) currentStepIndex = loadingSteps.length - 1;
                 
-                if (loadingText.innerText !== loadingSteps[currentStepIndex]) {
+                let stepIdx = Math.floor((progress / 100) * loadingSteps.length);
+                if (stepIdx >= loadingSteps.length) stepIdx = loadingSteps.length - 1;
+                
+                if (loadingText.innerText !== loadingSteps[stepIdx]) {
                     loadingText.style.opacity = 0;
                     setTimeout(() => {
-                        loadingText.innerText = loadingSteps[currentStepIndex];
+                        loadingText.innerText = loadingSteps[stepIdx];
                         loadingText.style.opacity = 1;
-                    }, 200);
+                    }, 150);
                 }
-
-            }, 400);
+            }, 300);
         }
 
         function finishLoadingAnimation() {
             clearInterval(scanInterval);
             document.getElementById('loading-bar').style.width = '100%';
-            document.getElementById('progress-percentage').innerText = '100%';
-            document.getElementById('loading-text').innerText = "Analisis Selesai!";
+            document.getElementById('loading-text').innerText = "Selesai!";
         }
 
         function resetScan() {
@@ -499,7 +417,6 @@
             document.getElementById('hero-section').classList.remove('hide');
             document.getElementById('search-section').classList.remove('hide');
             
-            // Re-trigger fade-in animation
             document.getElementById('hero-section').style.animation = 'none';
             document.getElementById('search-section').style.animation = 'none';
             setTimeout(() => {
@@ -508,24 +425,18 @@
             }, 10);
         }
 
-        // --- Core Scan Logic ---
         async function startScan() {
             const inputEl = document.getElementById('url-input');
             let url = inputEl.value.trim();
             
-            if (!url) {
-                alert('Peringatan: Masukkan URL terlebih dahulu!');
-                return;
-            }
-
+            if (!url) return;
             if (!/^https?:\/\//i.test(url)) url = 'http://' + url;
-
             try { new URL(url); } catch (_) {
-                alert('Format URL tidak valid. (contoh: https://bca.co.id)');
+                alert('Format URL tidak valid.');
                 return;
             }
 
-            // UI Updates: Hide Hero & Search, Show Loading
+            inputEl.blur(); 
             document.getElementById('hero-section').classList.add('hide');
             document.getElementById('search-section').classList.add('hide');
             document.getElementById('results-section').classList.add('hide');
@@ -536,137 +447,111 @@
             startLoadingAnimation();
 
             try {
-                // CALLING THE BACKEND API
-                // Karena ini demo frontend, kita akan buat simulate local scan berjalan sekitar 3 detik 
-                // agar animasi radar-nya terlihat keren
                 const response = await fetch('/api/scan', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ url: url })
                 });
 
-                if (!response.ok) throw new Error('Network response was not ok');
+                if (!response.ok) throw new Error('API Error');
                 const result = await response.json();
                 
                 finishLoadingAnimation();
-                setTimeout(() => renderResults(result.data, url), 600);
+                setTimeout(() => renderResults(result.data, url), 400);
 
             } catch (error) {
-                console.warn("Menggunakan Local Fallback Engine...");
-                // Simulate processing time for awesome loading effect
                 setTimeout(() => {
                     finishLoadingAnimation();
-                    setTimeout(() => simulateLocalScan(url), 500);
-                }, 3500);
+                    setTimeout(() => simulateLocalScan(url), 400);
+                }, 2000);
             }
         }
 
         function renderResults(data, originalUrl) {
-            // Hide loading
             document.getElementById('loading-state').classList.add('hide');
-            
             const resultsSection = document.getElementById('results-section');
-            const statusBanner = document.getElementById('status-banner');
+            
+            const statusCard = document.getElementById('status-card');
             const statusIcon = document.getElementById('status-icon');
+            const statusIconContainer = document.getElementById('status-icon-container');
             const statusTitle = document.getElementById('status-title');
             const statusGlow = document.getElementById('status-glow');
             
             document.getElementById('scanned-url').textContent = originalUrl;
+            animateValue("risk-score-value", 0, data.score, 800);
+
+            let colorHex, iconClass, titleText, bgGlow;
             
-            // Animate Score Counting
-            animateValue("risk-score-value", 0, data.score, 1000);
-
-            // Styling Reset
-            statusBanner.className = 'rounded-3xl p-6 sm:p-8 mb-8 flex flex-col sm:flex-row items-center justify-between gap-6 border-2 relative overflow-hidden transition-all duration-500';
-
             if (data.score <= 30) {
-                // SAFE (Green)
-                statusBanner.classList.add('bg-emerald-900/20', 'border-emerald-500/30');
-                statusGlow.className = 'absolute inset-0 opacity-20 blur-2xl bg-emerald-500';
-                statusIcon.className = 'w-20 h-20 shrink-0 rounded-2xl flex items-center justify-center text-4xl shadow-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/50';
-                statusIcon.innerHTML = '<i class="fa-solid fa-shield-check"></i>';
-                statusTitle.textContent = 'Indikasi Aman';
-                statusTitle.className = 'text-2xl sm:text-3xl font-extrabold mb-1 text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.5)]';
+                colorHex = '#30d158'; 
+                iconClass = 'ph-check-circle';
+                titleText = 'Aman';
+                bgGlow = 'bg-ios-green';
             } else if (data.score <= 65) {
-                // WARNING (Yellow)
-                statusBanner.classList.add('bg-amber-900/20', 'border-amber-500/30');
-                statusGlow.className = 'absolute inset-0 opacity-20 blur-2xl bg-amber-500';
-                statusIcon.className = 'w-20 h-20 shrink-0 rounded-2xl flex items-center justify-center text-4xl shadow-xl bg-amber-500/20 text-amber-400 border border-amber-500/50';
-                statusIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
-                statusTitle.textContent = 'Mencurigakan';
-                statusTitle.className = 'text-2xl sm:text-3xl font-extrabold mb-1 text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.5)]';
+                colorHex = '#ff9f0a';
+                iconClass = 'ph-warning-circle';
+                titleText = 'Mencurigakan';
+                bgGlow = 'bg-ios-orange';
             } else {
-                // DANGER (Red)
-                statusBanner.classList.add('bg-rose-900/20', 'border-rose-500/30');
-                statusGlow.className = 'absolute inset-0 opacity-20 blur-2xl bg-rose-500';
-                statusIcon.className = 'w-20 h-20 shrink-0 rounded-2xl flex items-center justify-center text-4xl shadow-xl bg-rose-500/20 text-rose-400 border border-rose-500/50 animate-pulse-glow';
-                statusIcon.innerHTML = '<i class="fa-solid fa-skull-crossbones"></i>';
-                statusTitle.textContent = 'Bahaya Phishing!';
-                statusTitle.className = 'text-2xl sm:text-3xl font-extrabold mb-1 text-rose-400 drop-shadow-[0_0_10px_rgba(244,63,94,0.8)]';
+                colorHex = '#ff453a';
+                iconClass = 'ph-warning-octagon';
+                titleText = 'Bahaya!';
+                bgGlow = 'bg-ios-red';
             }
 
-            // Populate Domain Details
+            statusIcon.className = `ph-fill ${iconClass}`;
+            statusIcon.style.color = colorHex;
+            statusIconContainer.style.backgroundColor = `${colorHex}20`;
+            statusIconContainer.style.borderColor = `${colorHex}50`;
+            statusTitle.textContent = titleText;
+            statusTitle.style.color = colorHex;
+            statusGlow.className = `absolute inset-0 opacity-20 blur-3xl rounded-full scale-150 ${bgGlow}`;
+
             const detailsList = document.getElementById('domain-details-list');
+            const isTrustedText = data.analysis.isTrustedTld ? 'Resmi' : 'Anonim';
+            const isTrustedColor = data.analysis.isTrustedTld ? 'text-ios-green' : 'text-ios-orange';
+            const isWhitelist = data.analysis.isOnWhitelist ? 'Terdaftar' : 'Tidak Terdaftar';
+            
             detailsList.innerHTML = `
-                <li class="flex justify-between items-center border-b border-slate-700/50 pb-3">
-                    <span class="text-slate-400"><i class="fa-solid fa-globe mr-2"></i> Ekstensi (TLD)</span>
-                    <span class="font-bold text-white bg-slate-800 px-3 py-1 rounded-md border border-slate-600">${data.analysis.tld || 'Unknown'}</span>
+                <li class="flex justify-between items-center px-4 py-3.5">
+                    <span class="text-white text-[13px] font-medium">Domain TLD</span>
+                    <span class="text-ios-gray text-[13px] font-mono">${data.analysis.tld || 'N/A'}</span>
                 </li>
-                <li class="flex justify-between items-center border-b border-slate-700/50 pb-3">
-                    <span class="text-slate-400"><i class="fa-solid fa-id-card mr-2"></i> Legalitas Domain</span>
-                    ${data.analysis.isTrustedTld 
-                        ? '<span class="font-bold text-emerald-400 flex items-center gap-1 bg-emerald-500/10 px-3 py-1 rounded-md"><i class="fa-solid fa-check"></i> Resmi (KTP/SIUP)</span>' 
-                        : '<span class="font-bold text-amber-400 flex items-center gap-1 bg-amber-500/10 px-3 py-1 rounded-md"><i class="fa-solid fa-exclamation"></i> Bebas/Anonim</span>'}
+                <li class="flex justify-between items-center px-4 py-3.5">
+                    <span class="text-white text-[13px] font-medium">Status Entitas</span>
+                    <span class="text-[13px] font-semibold ${isTrustedColor}">${isTrustedText}</span>
                 </li>
-                <li class="flex justify-between items-center border-b border-slate-700/50 pb-3">
-                    <span class="text-slate-400"><i class="fa-solid fa-building-shield mr-2"></i> Status Whitelist</span>
-                    ${data.analysis.isOnWhitelist 
-                        ? '<span class="font-bold text-blue-400 bg-blue-500/10 px-3 py-1 rounded-md">Terverifikasi (Instansi)</span>' 
-                        : '<span class="font-bold text-slate-500">Tidak Terdaftar</span>'}
-                </li>
-                 <li class="flex justify-between items-start pt-1">
-                    <span class="text-slate-400"><i class="fa-solid fa-comment-dots mr-2"></i> Kata Manipulatif</span>
-                    ${data.analysis.hasSuspiciousKeywords 
-                        ? `<div class="flex flex-wrap gap-1 justify-end max-w-[50%]">${data.analysis.keywordsFound.map(kw => `<span class="font-bold text-xs text-rose-400 bg-rose-500/10 border border-rose-500/30 px-2 py-1 rounded-md uppercase">${kw}</span>`).join('')}</div>` 
-                        : '<span class="font-bold text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-md">Bersih</span>'}
+                <li class="flex justify-between items-center px-4 py-3.5">
+                    <span class="text-white text-[13px] font-medium">Whitelist</span>
+                    <span class="text-ios-gray text-[13px]">${isWhitelist}</span>
                 </li>
             `;
 
-            // Populate AI Reasons with animated delay
             const reasonsList = document.getElementById('ai-reasons-list');
             reasonsList.innerHTML = '';
-            data.reasons.forEach((reason, index) => {
+            data.reasons.forEach(reason => {
                 const li = document.createElement('li');
-                li.className = "flex items-start gap-3 bg-slate-800/40 p-3 rounded-xl border border-slate-700/30 opacity-0";
-                li.style.animation = `fadeInUp 0.5s ease forwards ${index * 0.15}s`;
+                li.className = "flex items-start gap-2.5 text-[13px] text-ios-grayLight";
                 li.innerHTML = `
-                    <div class="mt-0.5 shrink-0 w-6 h-6 rounded-full bg-purple-500/20 flex items-center justify-center border border-purple-500/30 text-purple-400 text-xs">
-                        <i class="fa-solid fa-bolt"></i>
-                    </div> 
-                    <span class="text-slate-300 leading-relaxed">${reason}</span>
+                    <i class="ph-fill ph-sparkle text-ios-indigo mt-0.5 text-lg"></i>
+                    <span class="leading-relaxed">${reason}</span>
                 `;
                 reasonsList.appendChild(li);
             });
 
-            // Populate Conclusion
             document.getElementById('ai-conclusion').textContent = data.conclusion;
 
-            // Show results
             resultsSection.classList.remove('hide');
-            setTimeout(() => {
-                resultsSection.classList.add('opacity-100');
-            }, 50);
+            setTimeout(() => resultsSection.classList.add('opacity-100'), 50);
         }
 
-        // Animate numbers for score
         function animateValue(id, start, end, duration) {
             const obj = document.getElementById(id);
             let startTimestamp = null;
             const step = (timestamp) => {
                 if (!startTimestamp) startTimestamp = timestamp;
                 const progress = Math.min((timestamp - startTimestamp) / duration, 1);
-                // Easing out cubic
-                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const easeOut = 1 - Math.pow(1 - progress, 4);
                 obj.innerHTML = Math.floor(easeOut * (end - start) + start);
                 if (progress < 1) {
                     window.requestAnimationFrame(step);
@@ -675,62 +560,42 @@
             window.requestAnimationFrame(step);
         }
 
-        // --- Local Fallback Engine (Sama seperti sebelumnya, dipoles datanya) ---
         function simulateLocalScan(url) {
             const urlObj = new URL(url);
             const domain = urlObj.hostname;
             let score = 0;
-            let isTrustedTld = false, isOnWhitelist = false, hasSuspiciousKeywords = false;
-            let keywordsFound = [], reasons = [];
+            let isTrustedTld = false, isOnWhitelist = false;
+            let reasons = [];
 
-            const trustedTlds = [".id", ".co.id", ".go.id", ".ac.id", ".sch.id", ".or.id"];
-            const whitelist = ["go.id", "kemdikbud.go.id", "bpjs-kesehatan.go.id", "bca.co.id", "bni.co.id", "bri.co.id", "mandiri.co.id", "telkom.co.id"];
-            const suspiciousKeywords = ["login", "verify", "verification", "gift", "hadiah", "claim", "bonus", "prize", "akun", "saldo"];
-
+            const trustedTlds = [".id", ".co.id", ".go.id", ".ac.id"];
             const tldMatch = domain.match(/\.[a-z\.]+$/i);
             const tld = tldMatch ? tldMatch[0] : "";
 
             if (trustedTlds.includes(tld)) {
                 isTrustedTld = true;
-                reasons.push(`Domain menggunakan ekstensi resmi (${tld}) yang mewajibkan verifikasi identitas legal.`);
+                reasons.push("Ekstensi domain resmi yang memerlukan validasi KTP/Legalitas.");
             } else {
                 score += 30;
-                reasons.push(`Domain menggunakan ekstensi bebas (${tld}) yang sangat mudah didaftarkan oleh anonim untuk tujuan penipuan.`);
+                reasons.push("Menggunakan TLD bebas yang sering dipakai untuk penipuan anonim.");
             }
 
-            if (whitelist.some(w => domain === w || domain.endsWith('.' + w))) {
-                isOnWhitelist = true; score = 0;
-                reasons.push(`Domain terverifikasi masuk dalam daftar Whitelist ZannScan sebagai entitas resmi yang aman.`);
-            }
-
-            suspiciousKeywords.forEach(kw => {
-                if (url.toLowerCase().includes(kw)) { hasSuspiciousKeywords = true; keywordsFound.push(kw); }
-            });
-
-            if (hasSuspiciousKeywords && !isOnWhitelist) {
+            if (domain.includes('login') || domain.includes('verify')) {
                 score += 40;
-                reasons.push(`AI mendeteksi teknik manipulasi psikologis (Social Engineering) melalui kata: ${keywordsFound.join(', ')}.`);
+                reasons.push("Terdapat kata manipulatif (login/verify) pada alamat domain.");
             }
 
-            if (domain.split('.').length > 3 && !isOnWhitelist) {
-                score += 20;
-                reasons.push(`Struktur domain memiliki banyak subdomain, taktik umum untuk menyamarkan URL asli dan mengecoh korban.`);
-            }
-
-            score = Math.max(5, Math.min(score, 100)); // Cap 5-100
-
-            let conclusion = score <= 30 ? "Domain terlihat aman dari indikasi phishing berdasarkan struktur TLD dan database. Namun, selalu pastikan Anda berada di website yang benar." :
-                             score <= 65 ? "Perhatian! Domain ini memiliki beberapa karakteristik mencurigakan. Jangan memasukkan data pribadi/login (PIN, Password) tanpa verifikasi ganda." :
-                                           "🚨 PERINGATAN KERAS! Pola URL ini sangat identik dengan taktik Phishing. Segera tutup halaman ini untuk mencegah pencurian data Anda.";
+            score = Math.max(5, Math.min(score, 100));
+            const conclusion = score <= 30 ? "Domain ini terlihat wajar dan tidak menunjukkan pola phishing." : 
+                               score <= 65 ? "Domain menunjukkan anomali. Hindari memasukkan kredensial login." : 
+                               "Situs sangat berbahaya. Ini kemungkinan besar adalah web phishing.";
 
             renderResults({
-                score, analysis: { tld, isTrustedTld, hasSuspiciousKeywords, keywordsFound, isOnWhitelist },
-                reasons: reasons.length ? reasons : ["Analisis heuristik tidak menemukan anomali berbahaya."],
+                score, 
+                analysis: { tld, isTrustedTld, isOnWhitelist },
+                reasons: reasons.length ? reasons : ["Sistem tidak menemukan kejanggalan pada struktur domain."],
                 conclusion
             }, url);
         }
     </script>
 </body>
 </html>
-
-
